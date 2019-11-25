@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTK" Version="3.1.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="SDL2-CS">
       <HintPath>SDL2\Libs\SDL2-CS.dll</HintPath>
     </Reference>

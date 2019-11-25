@@ -2,10 +2,12 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
-using System.Drawing.Imaging;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using NETPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace OpenTKTesting
@@ -23,13 +25,24 @@ namespace OpenTKTesting
             //Any calls after this will be targeted to this texture described by the id
             GL.BindTexture(TextureTarget.Texture2D, id);
 
-            var bmp = new Bitmap($@"Content/{path}");
+            Image<Rgba32> image = (Image<Rgba32>)Image.Load($@"Content\{path}");
 
-            var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, NETPixelFormat.Format32bppArgb);
+            image.Mutate(x => x.Flip(FlipMode.Vertical));
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
 
-            bmp.UnlockBits(data);
+            Rgba32[] tempPixels = image.GetPixelSpan().ToArray();
+
+            var pixels = new List<byte>();
+
+            foreach (var pixel in tempPixels)
+            {
+                pixels.Add(pixel.R);
+                pixels.Add(pixel.G);
+                pixels.Add(pixel.B);
+                pixels.Add(pixel.A);
+            }
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pixels.ToArray());
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);

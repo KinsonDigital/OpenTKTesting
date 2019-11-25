@@ -37,18 +37,17 @@ namespace OpenTKTesting
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-
             //Clear the buffer bit of the color
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(Color.CornflowerBlue);
-            
+            GL.Clear(ClearBufferMask.ColorBufferBit);//RENDER
+            GL.ClearColor(Color.CornflowerBlue);//RENDER
+
+            GL.Begin(PrimitiveType.Quads);//BEGIN
 
             //Not aloud to change texture targets, (call below) between the Begin() and End() calls
             //This tells OpenGL that all of the GL primitive calls betw2een the Begin() and End() calls
             //will apply to this texture in the line below.
-            GL.BindTexture(TextureTarget.Texture2D, _textureId);
+            GL.BindTexture(TextureTarget.Texture2D, _textureId);//BETWEEN
 
-            GL.Begin(PrimitiveType.Quads);
 
             /*OpenGL Coordinate System
              0,0 = Center
@@ -67,25 +66,25 @@ namespace OpenTKTesting
              Setting the GL.Color3() will set the color for all of the next consecutive calls
              to the GL.Vertex2() calls.  
              */
-            GL.Color4(Color.FromArgb(255, 255, 0, 0));
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(0, 0);
+            GL.Color4(Color.FromArgb(255, 255, 0, 0));//BETWEEN
+            GL.TexCoord2(0, 0);//BETWEEN
+            GL.Vertex2(0, 0);//BETWEEN
 
-            GL.Color4(Color.FromArgb(255, 0, 0, 255));
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(1, 0);
+            GL.Color4(Color.FromArgb(255, 0, 0, 255));//BETWEEN
+            GL.TexCoord2(1, 0);//BETWEEN
+            GL.Vertex2(1, 0);//BETWEEN
 
-            GL.Color4(Color.FromArgb(255, 255, 125, 0));
-            GL.TexCoord2(1, 1);
-            GL.Vertex2(1, -1);
+            GL.Color4(Color.FromArgb(255, 255, 125, 0));//BETWEEN
+            GL.TexCoord2(1, 1);//BETWEEN
+            GL.Vertex2(1, -1);//BETWEEN
 
-            GL.Color4(Color.FromArgb(255, 0, 255, 0));
-            GL.TexCoord2(0, 1);
-            GL.Vertex2(0, -1);
+            GL.Color4(Color.FromArgb(255, 0, 255, 0));//BETWEEN
+            GL.TexCoord2(0, 1);//BETWEEN
+            GL.Vertex2(0, -1);//BETWEEN
 
-            GL.End();
+            GL.End();//END
 
-            SwapBuffers();
+            SwapBuffers();//END
 
             base.OnRenderFrame(e);
         }

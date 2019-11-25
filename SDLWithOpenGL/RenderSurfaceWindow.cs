@@ -3,6 +3,7 @@ using SDLWithOpenGL.Services;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using OpenTK.Graphics.OpenGL;
 using static SDL2.SDL;
 
 namespace SDLWithOpenGL
@@ -121,6 +122,13 @@ namespace SDLWithOpenGL
         private Point _currentMouseLocation;
         private bool _disposed;
         private bool _shownExecuted;
+
+
+        //GL Stuff
+        private int gProgramID;
+        private int gVertexPos2DLocation = -1;
+        private uint gVBO;
+        private uint gIBO;
         #endregion
 
 
@@ -390,33 +398,49 @@ namespace SDLWithOpenGL
                 //Initialize SDL
                 _sdl.Init(SDL_INIT_VIDEO);
 
+                //SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+                //SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 1);
+                //SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE);
+
+                //if (SDL_GL_SetSwapInterval(1) < 0)
+                //    throw new Exception($"Warning: Unable to set VSync! SDL Error: {SDL_GetError()}");
+
+                //if (!InitGL())
+                //{
+                //    throw new Exception("Unable to initialize OpenGL!");
+                //}
+
                 SurfaceHandle.Dispose();
 
                 if (_isInTaskbar && _isAlwaysOnTop)
                 {
                     SurfaceHandle = new WinSafeHandle(_sdl, _sdl.CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                        640, 480, SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR | SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP));
+                        640, 480, SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR | SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP));
                 }
                 else if(_isInTaskbar && !_isAlwaysOnTop)
                 {
                     SurfaceHandle = new WinSafeHandle(_sdl, _sdl.CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                        640, 480, SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE));
+                        640, 480, SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE));
                 }
                 else if(!_isInTaskbar && _isAlwaysOnTop)
                 {
                     SurfaceHandle = new WinSafeHandle(_sdl, _sdl.CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                        640, 480, SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR));
+                        640, 480, SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR));
                 }
                 else if(!_isInTaskbar && !_isAlwaysOnTop)
                 {
                     SurfaceHandle = new WinSafeHandle(_sdl, _sdl.CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                        640, 480, SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR | SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP));
+                        640, 480, SDL_WindowFlags.SDL_WINDOW_OPENGL | SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR | SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP));
                 }
 
 
                 if (SurfaceHandle.IsInvalid)
                     throw new Exception($"Window could not be created using the invalid surface handle. \n\nSDL_Error: {_sdl.GetError()}");
-                
+
+                SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+                SDL_GL_SetAttribute(SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 1);
+                var glContext = SDL_GL_CreateContext(SurfaceHandle.DangerousGetHandle());
+
                 _positionAndSizeEventTask.StartTask(ProcessEvents);
             }
             catch (Exception ex)
@@ -425,6 +449,138 @@ namespace SDLWithOpenGL
             }
 
             _shownExecuted = true;
+        }
+
+        private bool InitGL()
+        {
+            // Success flag
+            bool success = true;
+
+            //Generate program
+            gProgramID = GL.CreateProgram();
+
+            //Create vertex shader
+            var vertexShader = GL.CreateShader(ShaderType.VertexShader);
+
+            //Get vertex source
+            string[] vertexShaderSource = new[]
+            {
+                "#version 140\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }"
+            };
+
+            //WARNING!! - The shader lengths param might be an issue here
+            var shaderLengths = vertexShaderSource.Length;
+            //Set vertex source
+            GL.ShaderSource(vertexShader, 1, vertexShaderSource, ref shaderLengths);
+
+            //Compile vertex source
+            GL.CompileShader(vertexShader);
+
+            //Check vertex shader for errors
+            var vertexShaderCompiled = 0;
+
+            GL.GetShader(vertexShader, ShaderParameter.CompileStatus, out vertexShaderCompiled);
+
+            if (vertexShaderCompiled != 1)
+            {
+                throw new Exception("Unable to compile vertex shader %d!");
+                success = false;
+            }
+            else
+            {
+                //Attach vertex shader to program
+                GL.AttachShader(gProgramID, vertexShader);
+
+
+                //Create fragment shader
+                var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+
+                //Get fragment source
+                string[] fragmentShaderSource = new[]
+                {
+                    "#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }"
+                };
+
+                var fragmentShaderLengths = fragmentShaderSource.Length;
+
+                //Set fragment source
+                GL.ShaderSource(fragmentShader, 1, fragmentShaderSource, ref fragmentShaderLengths);
+
+                //Compile fragment source
+                GL.CompileShader(fragmentShader);
+
+                //Check fragment shader for errors
+                var fShaderCompiled = 0;
+
+                var fragmentShaderCompiled = 0;
+
+                GL.GetShader(fragmentShader, ShaderParameter.CompileStatus, out fragmentShaderCompiled);
+
+                if (fShaderCompiled != 1)
+                {
+                    throw new Exception("Unable to compile fragment shader %d!");
+                    success = false;
+                }
+                else
+                {
+                    //Attach fragment shader to program
+                    GL.AttachShader(gProgramID, fragmentShader);
+
+
+                    //Link program
+                    GL.LinkProgram(gProgramID);
+
+                    //Check for errors
+                    var programSuccess = 1;
+                    GL.GetProgram(gProgramID, GetProgramParameterName.LinkStatus, out programSuccess);
+
+                    if (programSuccess != 1)
+                    {
+                        throw new Exception("Error linking program %d!");
+                        success = false;
+                    }
+                    else
+                    {
+                        //Get vertex attribute location
+                        gVertexPos2DLocation = GL.GetAttribLocation(gProgramID, "LVertexPos2D");
+                        if (gVertexPos2DLocation == -1)
+                        {
+                            throw new Exception("LVertexPos2D is not a valid GL.sl program variable!");
+                            success = false;
+                        }
+                        else
+                        {
+                            //Initialize clear color
+                            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+                            //VBO data
+                            float[] vertexData =
+                            {
+                                    -0.5f, -0.5f,
+                                     0.5f, -0.5f,
+                                     0.5f,  0.5f,
+                                    -0.5f,  0.5f
+                                };
+
+                            //IBO data
+                            var indexData = new[] { 0U, 1U, 2U, 3U };
+
+                            //Create VBO
+                            GL.GenBuffers(1, out gVBO);
+                            GL.BindBuffer(BufferTarget.ArrayBuffer, gVBO);
+                            GL.BufferData(BufferTarget.ArrayBuffer, 2 * 4 * sizeof(float), vertexData, BufferUsageHint.StaticDraw);
+
+                            //Create IBO
+                            GL.GenBuffers(1, out gIBO);
+                            GL.BindBuffer(BufferTarget.ArrayBuffer, gIBO);
+                            GL.BufferData(BufferTarget.ArrayBuffer, 4 * sizeof(uint), indexData, BufferUsageHint.StaticDraw);
+                        }
+                    }
+                }
+            }
+
+
+            return success;
         }
 
 
