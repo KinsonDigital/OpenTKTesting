@@ -33,74 +33,35 @@ namespace OpenTKTesting
 
         // For documentation on this, check Texture.cs
         private Texture _texture;
+        private KeyboardState _currentKeyState;
+        private KeyboardState _prevKeyState;
 
 
-        public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) { }
+        public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
+        {
+            GLExt.SetWindow(this);
+        }
 
 
         protected override void OnLoad(EventArgs e)
         {
-            //These next 3 lines enable alpha pixels to be used
-            GL.Disable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLExt.EnableAlpha();
 
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GLExt.ClearColor(255, 0, 0, 255);
 
-            _vertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
-            _elementBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
-
-
-            // The shaders have been modified to include the texture coordinates, check them out after finishing the OnLoad function.
-            _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-            _shader.Use();
-
-
-            _texture = new Texture("Content/Gear.png");
-            _texture.Use();
-
-
-            _vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayObject);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
-
-            // Because there's now 5 floats between the start of the first vertex and the start of the second,
-            // we modify this from 3 * sizeof(float) to 5 * sizeof(float).
-            // This will now pass the new vertex array to the buffer.
-            var vertexLocation = _shader.GetAttribLocation("aPosition");
-            GL.EnableVertexAttribArray(vertexLocation);
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-
-            // Next, we also setup texture coordinates. It works in much the same way.
-            // We add an offset of 3, since the first vertex coordinate comes after the first vertex
-            // and change the amount of data to 2 because there's only 2 floats for vertex coordinates
-            var texCoordLocation = _shader.GetAttribLocation("aTexCoord");
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
+            _texture = new Texture("Gear.png");
+            
             base.OnLoad(e);
         }
 
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GLExt.Begin();
 
-            GL.BindVertexArray(_vertexArrayObject);
+            GLExt.RenderTexture(_texture);
 
-            _texture.Use();
-            _shader.Use();
-
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-
-            SwapBuffers();
+            GLExt.End();
 
             base.OnRenderFrame(e);
         }
@@ -108,13 +69,20 @@ namespace OpenTKTesting
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            var input = Keyboard.GetState();
+            _currentKeyState = Keyboard.GetState();
 
-            if (input.IsKeyDown(Key.Escape))
-            {
+            if (_currentKeyState.IsKeyDown(Key.Escape))
                 Exit();
+
+            if (_currentKeyState.IsKeyDown(Key.A) && _prevKeyState.IsKeyUp(Key.A))
+            {
+                if (GLExt.IsAlphaEnabled)
+                    GLExt.DisableAlpha();
+                else
+                    GLExt.EnableAlpha();
             }
 
+            _prevKeyState = _currentKeyState;
             base.OnUpdateFrame(e);
         }
 

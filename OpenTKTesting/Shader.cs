@@ -123,7 +123,7 @@ namespace OpenTKTesting
         // A wrapper function that enables the shader program.
         public void Use()
         {
-            GL.UseProgram(Handle);
+            GLExt.UseShader(Handle);
         }
 
 
