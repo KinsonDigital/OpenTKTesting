@@ -47,7 +47,7 @@ namespace OpenTKTesting
                 -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, // bottom left
                 -0.5f, 0.5f, 0.0f,      0.0f, 1.0f  // top left 
             };
-
+            
             Indices = new uint[]
             {
                 0, 1, 3,

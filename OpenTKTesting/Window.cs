@@ -37,9 +37,16 @@ namespace OpenTKTesting
         private KeyboardState _prevKeyState;
 
 
+        public static int ViewPortWidth { get; private set; }
+
+        public static int ViewPortHeight { get; private set; }
+
         public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
         {
             GLExt.SetWindow(this);
+
+            ViewPortWidth = width;
+            ViewPortHeight = height;
         }
 
 
