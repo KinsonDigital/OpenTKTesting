@@ -16,11 +16,15 @@ namespace OpenTKTesting
 
 
         #region Props
+        public int X { get; set; }
+
+        public int Y { get; set; }
+
         public int Width { get; set; }
 
         public int Height { get; set; }
 
-        internal int Handle { get; private set; }
+        internal int Handle { get; set; }
 
         internal List<Shader> Shaders { get; set; } = new List<Shader>();
 
@@ -53,11 +57,44 @@ namespace OpenTKTesting
                 0, 1, 3,
                 1, 2, 3
             };
+
+            var (handle, width, height) = GLExt.LoadTexture(name);
+
+            Handle = handle;
+            Width = width;
+            Height = height;
+
+            var widthDeltaPercent = Width / Window.ViewPortWidth;
+            var heightDeltaPercent = Height / Window.ViewPortHeight;
+
+            //Calculate screen space
+            var topRightX = GLExt.MapValue(-1, 1, 0, Width, Vertices[0]);
+            var topRightY = GLExt.MapValue(1, -1, 0, Height, Vertices[1]);
+
+            var bottomRightX = GLExt.MapValue(-1, 1, 0, Width, Vertices[5]);
+            var bottomRightY = GLExt.MapValue(1, -1,0 , Height, Vertices[6]);
+
+            var bottomLeftX = GLExt.MapValue(-1, 1, 0, Width, Vertices[10]);
+            var bottomLeftY = GLExt.MapValue(1, -1, 0, Height, Vertices[11]);
+
+            var topLeftX = GLExt.MapValue(-1, 1, 0, Width, Vertices[15]);
+            var topLeftY = GLExt.MapValue(1, -1, 0, Height, Vertices[16]);
+
+            //var topRightX = GLExt.MapValue(0, Width, -1, 1, Vertices[0]);
+            //var topRightY = GLExt.MapValue(0, Height, 1, -1, Vertices[1]);
+
+            //var bottomRightX = GLExt.MapValue(0, Width, -1, 1, Vertices[5]);
+            //var bottomRightY = GLExt.MapValue(0, Height, 1, -1, Vertices[6]);
+
+            //var bottomLeftX = GLExt.MapValue(0, Width, -1, 1, Vertices[10]);
+            //var bottomLeftY = GLExt.MapValue(0, Height, 1, -1, Vertices[11]);
+
+            //var topLeftX = GLExt.MapValue(0, Width, -1, 1, Vertices[15]);
+            //var topLeftY = GLExt.MapValue(0, Height, 1, -1, Vertices[16]);
+
             VBO = GLExt.CreateVBO(Vertices);
             EBO = GLExt.CreateEBO(Indices);
             VAO = GLExt.CreateVAO(VBO, EBO);
-
-            Handle = GLExt.LoadTexture(name);
 
             CreateDefaultShader();
         }

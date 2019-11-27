@@ -25,7 +25,7 @@ namespace OpenTKTesting
 
 
         #region Public Methods
-        public static int LoadTexture(string name)
+        public static (int handle, int width, int height) LoadTexture(string name)
         {
             // Generate handle
             var textureHandle = GL.GenTexture();
@@ -62,7 +62,7 @@ namespace OpenTKTesting
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
 
-            return textureHandle;
+            return (textureHandle, image.Width, image.Height);
         }
 
 
@@ -188,10 +188,10 @@ namespace OpenTKTesting
 
 
         #region Private Methods
-        private static float MapValue(float a0, float a1, float b0, float b1, float a)
+        public static float MapValue(float from0, float from1, float to0, float to1, float value)
         {
             //http://james-ramsden.com/map-a-value-from-one-number-scale-to-another-formula-and-c-code/
-            return b0 + (b1 - b0) * ((a - a0) / (a1 - a0));
+            return to0 + (to1 - to0) * ((value - from0) / (from1 - from0));
         }
         #endregion
     }
