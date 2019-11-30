@@ -3,18 +3,15 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenTKTesting
 {
     // A helper class, much like Shader, meant to simplify loading textures.
-    public class Texture
+    public class Texture : IDisposable
     {
-        #region Fields
-        #endregion
-
-
         #region Props
         public int X { get; set; }
 
@@ -28,11 +25,11 @@ namespace OpenTKTesting
 
         internal List<Shader> Shaders { get; set; } = new List<Shader>();
 
-        internal int VBO { get; private set; }
+        internal VertexBuffer VB { get; private set; }
 
-        internal int EBO { get; private set; }
+        internal IndexBuffer IB { get; private set; }
 
-        internal int VAO { get; private set; }
+        internal VertexArray VA { get; private set; }
 
         internal float[] Vertices { get; set; }
 
@@ -44,13 +41,13 @@ namespace OpenTKTesting
         public Texture(string name)
         {
             //Square - Position & Texture coordinates/vertices all in one array
-            Vertices = new [] {
-              //Position                Texture coordinates
-                0.5f, 0.5f, 0.0f,       1.0f, 1.0f, // top right
-                0.5f, -0.5f, 0.0f,      1.0f, 0.0f, // bottom right
-                -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, // bottom left
-                -0.5f, 0.5f, 0.0f,      0.0f, 1.0f  // top left 
-            };
+            //Vertices = new [] {
+            //  //Position                Texture coordinates
+            //    -0.5f, 0.5f, 0.0f,      0.0f, 1.0f,  // top left 
+            //    0.5f, 0.5f, 0.0f,       1.0f, 1.0f, // top right
+            //    0.5f, -0.5f, 0.0f,      1.0f, 0.0f, // bottom right
+            //    -0.5f, -0.5f, 0.0f,     0.0f, 0.0f // bottom left
+            //};
             
             Indices = new uint[]
             {
@@ -64,37 +61,12 @@ namespace OpenTKTesting
             Width = width;
             Height = height;
 
-            var widthDeltaPercent = Width / Window.ViewPortWidth;
-            var heightDeltaPercent = Height / Window.ViewPortHeight;
+            Vertices = MapToNDC();
 
-            //Calculate screen space
-            var topRightX = GLExt.MapValue(-1, 1, 0, Width, Vertices[0]);
-            var topRightY = GLExt.MapValue(1, -1, 0, Height, Vertices[1]);
 
-            var bottomRightX = GLExt.MapValue(-1, 1, 0, Width, Vertices[5]);
-            var bottomRightY = GLExt.MapValue(1, -1,0 , Height, Vertices[6]);
-
-            var bottomLeftX = GLExt.MapValue(-1, 1, 0, Width, Vertices[10]);
-            var bottomLeftY = GLExt.MapValue(1, -1, 0, Height, Vertices[11]);
-
-            var topLeftX = GLExt.MapValue(-1, 1, 0, Width, Vertices[15]);
-            var topLeftY = GLExt.MapValue(1, -1, 0, Height, Vertices[16]);
-
-            //var topRightX = GLExt.MapValue(0, Width, -1, 1, Vertices[0]);
-            //var topRightY = GLExt.MapValue(0, Height, 1, -1, Vertices[1]);
-
-            //var bottomRightX = GLExt.MapValue(0, Width, -1, 1, Vertices[5]);
-            //var bottomRightY = GLExt.MapValue(0, Height, 1, -1, Vertices[6]);
-
-            //var bottomLeftX = GLExt.MapValue(0, Width, -1, 1, Vertices[10]);
-            //var bottomLeftY = GLExt.MapValue(0, Height, 1, -1, Vertices[11]);
-
-            //var topLeftX = GLExt.MapValue(0, Width, -1, 1, Vertices[15]);
-            //var topLeftY = GLExt.MapValue(0, Height, 1, -1, Vertices[16]);
-
-            VBO = GLExt.CreateVBO(Vertices);
-            EBO = GLExt.CreateEBO(Indices);
-            VAO = GLExt.CreateVAO(VBO, EBO);
+            VB = new VertexBuffer(Vertices);
+            IB = new IndexBuffer(Indices);
+            VA = new VertexArray(VB, IB);
 
             CreateDefaultShader();
         }
@@ -108,6 +80,35 @@ namespace OpenTKTesting
 
 
         #region Private Methods
+        private float[] MapToNDC()
+        {
+            var vertices = new [] {
+                //Position              Texture coordinates
+                0.0f,   0.0f, 0.0f,     0.0f, 1.0f, // top left 
+                0.0f,   0.0f, 0.0f,     1.0f, 1.0f, // top right
+                0.0f,   0.0f, 0.0f,     1.0f, 0.0f, // bottom right
+                0.0f,   0.0f, 0.0f,     0.0f, 0.0f  // bottom left
+            };
+
+            var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, X);
+            var posY = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y);
+            var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, X + Width);
+            var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y + Height);
+
+            vertices[0] = posX;
+            vertices[1] = posY;
+            vertices[5] = newWidth;
+            vertices[6] = posY;
+            vertices[10] = newWidth;
+            vertices[11] = newHeight;
+            vertices[15] = posX;
+            vertices[16] = newHeight;
+
+
+            return vertices;
+        }
+
+
         private void CreateDefaultShader()
         {
             // The shaders have been modified to include the texture coordinates, check them out after finishing the OnLoad function.
@@ -125,6 +126,19 @@ namespace OpenTKTesting
             GLExt.SetupVertexShaderAttribute(shader, "aTexCoord", 2, 3 * sizeof(float));
 
             Shaders.Add(shader);
+        }
+
+        public void Dispose()
+        {
+            VB.Dispose();
+            IB.Dispose();
+
+            GL.DeleteTexture(Handle);
+
+            foreach (var shader in Shaders)
+            {
+                GL.DeleteProgram(shader.Handle);
+            }
         }
         #endregion
     }
