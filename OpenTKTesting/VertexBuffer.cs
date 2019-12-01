@@ -22,6 +22,12 @@ namespace OpenTKTesting
         public int RendererId => _rendererId;
 
 
+        public void SetLayout(float[] data)
+        {
+            GL.BufferData(BufferTarget.ArrayBuffer, data.Length * sizeof(float), data, BufferUsageHint.StaticDraw);
+        }
+
+
         public void Bind() 
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, RendererId);

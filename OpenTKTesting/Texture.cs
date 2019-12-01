@@ -5,6 +5,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace OpenTKTesting
@@ -12,10 +13,37 @@ namespace OpenTKTesting
     // A helper class, much like Shader, meant to simplify loading textures.
     public class Texture : IDisposable
     {
-        #region Props
-        public int X { get; set; }
+        private readonly ImageLoader _imageLoader;
+        private int _x;
+        private int _y;
 
-        public int Y { get; set; }
+
+        #region Props
+        public int X
+        {
+            get => _x;
+            set
+            {
+                _x = value;
+                var data = MapToNDC();
+
+                VB.Bind();
+                VB.SetLayout(data);
+            }
+        }
+
+        public int Y
+        {
+            get => _y;
+            set
+            {
+                _y = value;
+                var data = MapToNDC();
+
+                VB.Bind();
+                VB.SetLayout(data);
+            }
+        }
 
         public int Width { get; set; }
 
@@ -40,29 +68,21 @@ namespace OpenTKTesting
         // Create texture from path.
         public Texture(string name)
         {
-            //Square - Position & Texture coordinates/vertices all in one array
-            //Vertices = new [] {
-            //  //Position                Texture coordinates
-            //    -0.5f, 0.5f, 0.0f,      0.0f, 1.0f,  // top left 
-            //    0.5f, 0.5f, 0.0f,       1.0f, 1.0f, // top right
-            //    0.5f, -0.5f, 0.0f,      1.0f, 0.0f, // bottom right
-            //    -0.5f, -0.5f, 0.0f,     0.0f, 0.0f // bottom left
-            //};
-            
             Indices = new uint[]
             {
                 0, 1, 3,
                 1, 2, 3
             };
 
-            var (handle, width, height) = GLExt.LoadTexture(name);
+                    
+            _imageLoader = new ImageLoader();
+            var (handle, width, height) = _imageLoader.LoadTexture(name);
 
             Handle = handle;
             Width = width;
             Height = height;
 
             Vertices = MapToNDC();
-
 
             VB = new VertexBuffer(Vertices);
             IB = new IndexBuffer(Indices);
@@ -76,13 +96,17 @@ namespace OpenTKTesting
         // Multiple textures can be bound, if your shader needs more than just one.
         // If you want to do that, use GL.ActiveTexture to set which slot GL.BindTexture binds to.
         // The OpenGL standard requires that there be at least 16, but there can be more depending on your graphics card.
-        public void Use() => GLExt.UseTexture(Handle);
+        public void Use()
+        {
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, Handle);
+        }
 
 
         #region Private Methods
         private float[] MapToNDC()
         {
-            var vertices = new [] {
+            var vertices = new[] {
                 //Position              Texture coordinates
                 0.0f,   0.0f, 0.0f,     0.0f, 1.0f, // top left 
                 0.0f,   0.0f, 0.0f,     1.0f, 1.0f, // top right
@@ -90,9 +114,9 @@ namespace OpenTKTesting
                 0.0f,   0.0f, 0.0f,     0.0f, 0.0f  // bottom left
             };
 
-            var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, X);
+            var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x);
             var posY = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y);
-            var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, X + Width);
+            var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x + Width);
             var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y + Height);
 
             vertices[0] = posX;
@@ -128,10 +152,12 @@ namespace OpenTKTesting
             Shaders.Add(shader);
         }
 
+
         public void Dispose()
         {
             VB.Dispose();
             IB.Dispose();
+            VA.Dispose();
 
             GL.DeleteTexture(Handle);
 

@@ -8,29 +8,12 @@ namespace OpenTKTesting
 {
     public class Window : GameWindow
     {
-        // Because we're adding a texture, we modify the vertex array to include texture coordinates.
-        // Texture coordinates range from 0.0 to 1.0, with (0.0, 0.0) representing the bottom left, and (1.0, 1.0) representing the top right
-        // The new layout is three floats to create a vertex, then two floats to create the coordinates
-        //private readonly float[] _vertices =
-        //{
-        //    // Position         Texture coordinates
-        //     0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
-        //     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
-        //    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-        //    -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left 
-        //};
-
-        //private readonly uint[] _indices =
-        //{
-        //    0, 1, 3,
-        //    1, 2, 3
-        //};
-
-        // For documentation on this, check Texture.cs
         private Texture _texture;
         private KeyboardState _currentKeyState;
         private KeyboardState _prevKeyState;
-
+        private float _elapsedMS;
+        private readonly Renderer _renderer;
+        private static bool _beginInvoked;
 
         public static int ViewPortWidth { get; private set; }
 
@@ -39,10 +22,9 @@ namespace OpenTKTesting
 
         public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
         {
-            GLExt.SetWindow(this);
-
             ViewPortWidth = width;
             ViewPortHeight = height;
+            _renderer = new Renderer();
         }
 
 
@@ -58,35 +40,37 @@ namespace OpenTKTesting
         }
 
 
-        protected override void OnRenderFrame(FrameEventArgs e)
-        {
-            GLExt.Begin();
-
-            GLExt.RenderTexture(_texture);
-
-            GLExt.End();
-
-            base.OnRenderFrame(e);
-        }
-
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             _currentKeyState = Keyboard.GetState();
 
+            _elapsedMS += (float)e.Time * 1000f;
+
+            if (_elapsedMS >= 16f)
+            {
+                _texture.X += 1;
+                _texture.Y += 1;
+                _elapsedMS = 0;
+            }
+
             if (_currentKeyState.IsKeyDown(Key.Escape))
                 Exit();
 
-            if (_currentKeyState.IsKeyDown(Key.A) && _prevKeyState.IsKeyUp(Key.A))
-            {
-                if (GLExt.IsAlphaEnabled)
-                    GLExt.DisableAlpha();
-                else
-                    GLExt.EnableAlpha();
-            }
-
             _prevKeyState = _currentKeyState;
+
             base.OnUpdateFrame(e);
+        }
+
+
+        protected override void OnRenderFrame(FrameEventArgs e)
+        {
+            Begin();
+
+            _renderer.Draw(_texture);
+
+            End();
+
+            base.OnRenderFrame(e);
         }
 
 
@@ -110,6 +94,25 @@ namespace OpenTKTesting
             
 
             base.OnUnload(e);
+        }
+
+
+
+        private void Begin()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            _beginInvoked = true;
+        }
+
+
+        private void End()
+        {
+            if (!_beginInvoked)
+                throw new Exception("Begin() must be invoked first.");
+
+            SwapBuffers();
+
+            _beginInvoked = false;
         }
     }
 }

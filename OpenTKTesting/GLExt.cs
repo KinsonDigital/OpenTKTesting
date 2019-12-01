@@ -68,6 +68,7 @@ namespace OpenTKTesting
 
         public static void SetWindow(Window window) => _mainWindow = window;
 
+
         public static void RenderTexture(Texture texture)
         {
             GL.BindVertexArray(texture.VA.VertexArrayHandle);
@@ -163,27 +164,6 @@ namespace OpenTKTesting
 
 
         public static void UseShader(int shaderHandle) => GL.UseProgram(shaderHandle);
-
-
-        public static void Begin()
-        {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            _beginInvoked = true;
-        }
-
-
-        public static void End()
-        {
-            if (!_beginInvoked)
-                throw new Exception("Begin() must be invoked first.");
-
-            if (_mainWindow is null)
-                throw new Exception("The Window has not been set.");
-
-            _mainWindow.SwapBuffers();
-
-            _beginInvoked = false;
-        }
         #endregion
 
 
