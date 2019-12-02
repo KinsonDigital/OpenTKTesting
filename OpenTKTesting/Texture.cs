@@ -45,6 +45,8 @@ namespace OpenTKTesting
             }
         }
 
+        public float Size { get; set; } = 1f;
+
         public int Width { get; set; }
 
         public int Height { get; set; }
@@ -116,8 +118,8 @@ namespace OpenTKTesting
 
             var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x);
             var posY = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y);
-            var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x + Width);
-            var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y + Height);
+            var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x + Width * Size);
+            var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y + Height * Size);
 
             vertices[0] = posX;
             vertices[1] = posY;
