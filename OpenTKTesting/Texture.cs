@@ -40,6 +40,8 @@ namespace OpenTKTesting
             }
         }
 
+        public float Angle { get; set; }
+
         public float Size { get; set; } = 1f;
 
         public int Width { get; set; }
@@ -70,7 +72,6 @@ namespace OpenTKTesting
                 0, 1, 3,
                 1, 2, 3
             };
-
                     
             _imageLoader = new ImageLoader();
             var (handle, width, height) = _imageLoader.LoadTexture(name);
@@ -79,7 +80,13 @@ namespace OpenTKTesting
             Width = width;
             Height = height;
 
-            Vertices = MapToNDC();
+            Vertices = new[] {
+                //Position              Texture coordinates
+               -1f,   1f, 0.0f,     0.0f, 1.0f, // top left 
+                1f,   1f, 0.0f,     1.0f, 1.0f, // top right
+                1f,  -1f, 0.0f,     1.0f, 0.0f, // bottom right
+               -1f,  -1f, 0.0f,     0.0f, 0.0f  // bottom left
+            };
 
             VB = new VertexBuffer(Vertices);
             IB = new IndexBuffer(Indices);
@@ -101,35 +108,6 @@ namespace OpenTKTesting
 
 
         #region Private Methods
-        private float[] MapToNDC()
-        {
-            var vertices = new[] {
-                //Position              Texture coordinates
-               -1f,   1f, 0.0f,     0.0f, 1.0f, // top left 
-                1f,   1f, 0.0f,     1.0f, 1.0f, // top right
-                1f,  -1f, 0.0f,     1.0f, 0.0f, // bottom right
-               -1f,  -1f, 0.0f,     0.0f, 0.0f  // bottom left
-            };
-
-            //var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x);
-            //var posY = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, _y);
-            //var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x + Width * Size);
-            //var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, _y + Height * Size);
-
-            //vertices[0] = posX;
-            //vertices[1] = posY;
-            //vertices[5] = newWidth;
-            //vertices[6] = posY;
-            //vertices[10] = newWidth;
-            //vertices[11] = newHeight;
-            //vertices[15] = posX;
-            //vertices[16] = newHeight;
-
-            
-            return vertices;
-        }
-
-
         private void CreateDefaultShader()
         {
             // The shaders have been modified to include the texture coordinates, check them out after finishing the OnLoad function.
@@ -165,16 +143,6 @@ namespace OpenTKTesting
         }
 
 
-        private Matrix4 MultVector2(Matrix4 matrix, Vector2 vector)
-        {
-            matrix.M14 = matrix.M14 * vector.X;
-            matrix.M24 = matrix.M24 * vector.Y;
-            //matrix.M14 = matrix.M14 * 1;
-
-
-            return matrix;
-        }
-
         public void Dispose()
         {
             VB.Dispose();
@@ -200,7 +168,12 @@ namespace OpenTKTesting
             var ndcY = GLExt.MapValue(0, Window.ViewPortHeight, 1f, -1f, _y);
 
             //NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
-            var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(-90.0f));
+            var angleRadians = MathHelper.DegreesToRadians(Angle);
+
+            //Invert angle to rotate CW instead of CCW
+            angleRadians *= -1;
+
+            var rotation = Matrix4.CreateRotationZ(angleRadians);
             var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
             var posMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
 

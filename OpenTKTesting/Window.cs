@@ -50,6 +50,7 @@ namespace OpenTKTesting
             {
                 _texture.X += 25f * (float)e.Time;
                 _texture.Y += 25f * (float)e.Time;
+                _texture.Angle += 1;
                 _elapsedMS = 0;
             }
 
