@@ -8,26 +8,35 @@ namespace OpenTKTesting
 {
     public class Window : GameWindow
     {
+        #region Private Fields
         private Texture _texture;
         private KeyboardState _currentKeyState;
         private KeyboardState _prevKeyState;
         private float _elapsedMS;
         private readonly Renderer _renderer;
         private static bool _beginInvoked;
+        private bool _increaseSize = true;
+        #endregion
 
+
+        #region Props
         public static int ViewPortWidth { get; private set; }
 
         public static int ViewPortHeight { get; private set; }
+        #endregion
 
 
+        #region Constructors
         public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
         {
             ViewPortWidth = width;
             ViewPortHeight = height;
             _renderer = new Renderer();
         }
+        #endregion
 
 
+        #region Protected Methods
         protected override void OnLoad(EventArgs e)
         {
             GLExt.EnableAlpha();
@@ -51,6 +60,18 @@ namespace OpenTKTesting
                 _texture.X += 25f * (float)e.Time;
                 _texture.Y += 25f * (float)e.Time;
                 _texture.Angle += 1;
+
+                _texture.Size += _increaseSize ? 0.015f : -0.015f;
+
+                if (_texture.Size >= 2)
+                {
+                    _increaseSize = false;
+                }
+                else if(_texture.Size <= 1)
+                {
+                    _increaseSize = true;
+                }
+
                 _elapsedMS = 0;
             }
 
@@ -86,19 +107,14 @@ namespace OpenTKTesting
         {
             _texture.Dispose();
 
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            //GL.BindVertexArray(0);
-            
-            //GL.DeleteVertexArray(_vertexArrayObject);
-
             GL.UseProgram(0);
-            
 
             base.OnUnload(e);
         }
+        #endregion
 
 
-
+        #region Private Methods
         private void Begin()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -115,5 +131,6 @@ namespace OpenTKTesting
 
             _beginInvoked = false;
         }
+        #endregion
     }
 }

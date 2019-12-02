@@ -15,8 +15,6 @@ namespace OpenTKTesting
     {
         #region Fields
         private static string _contentPath = @"Content\";
-        private static bool _beginInvoked;
-        private static Window _mainWindow;
         #endregion
 
 
@@ -67,9 +65,6 @@ namespace OpenTKTesting
         }
 
 
-        public static void SetWindow(Window window) => _mainWindow = window;
-
-
         public static void RenderTexture(Texture texture)
         {
             GL.BindVertexArray(texture.VA.VertexArrayHandle);
@@ -84,6 +79,7 @@ namespace OpenTKTesting
             int uniformTransformationLocation = GL.GetUniformLocation(vertShaderHandle, uniformName);
             GL.UniformMatrix4(uniformTransformationLocation, true, ref transformationMatrix);
         }
+
 
         public static void EnableAlpha()
         {

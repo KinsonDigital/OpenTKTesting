@@ -163,6 +163,9 @@ namespace OpenTKTesting
             var scaleX = (float)Width / Window.ViewPortWidth;
             var scaleY = (float)Height / Window.ViewPortHeight;
 
+            scaleX *= Size;
+            scaleY *= Size;
+
             //NDC = Normalized Device Coordinates
             var ndcX = GLExt.MapValue(0, Window.ViewPortWidth, -1f, 1f, _x);
             var ndcY = GLExt.MapValue(0, Window.ViewPortHeight, 1f, -1f, _y);
@@ -174,7 +177,7 @@ namespace OpenTKTesting
             angleRadians *= -1;
 
             var rotation = Matrix4.CreateRotationZ(angleRadians);
-            var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
+            var scale = Matrix4.CreateScale(scaleY, scaleX, 1f);
             var posMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
 
 
