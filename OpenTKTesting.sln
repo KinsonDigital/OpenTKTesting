@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTKTesting", "OpenTKTesting\OpenTKTesting.csproj", "{32A31420-800D-4642-96AE-B72BEA3578B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenGLRenderWindow", "OpenGLRenderWindow\OpenGLRenderWindow.csproj", "{FABD9FDD-3C66-4970-BE14-95ADA6C7D7D2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -17,10 +15,6 @@ Global
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Debug|x64.Build.0 = Debug|x64
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Release|x64.ActiveCfg = Release|x64
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Release|x64.Build.0 = Release|x64
-		{FABD9FDD-3C66-4970-BE14-95ADA6C7D7D2}.Debug|x64.ActiveCfg = Debug|x64
-		{FABD9FDD-3C66-4970-BE14-95ADA6C7D7D2}.Debug|x64.Build.0 = Debug|x64
-		{FABD9FDD-3C66-4970-BE14-95ADA6C7D7D2}.Release|x64.ActiveCfg = Release|x64
-		{FABD9FDD-3C66-4970-BE14-95ADA6C7D7D2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
