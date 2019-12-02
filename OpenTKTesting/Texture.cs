@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
@@ -110,27 +111,27 @@ namespace OpenTKTesting
         {
             var vertices = new[] {
                 //Position              Texture coordinates
-                0.0f,   0.0f, 0.0f,     0.0f, 1.0f, // top left 
-                0.0f,   0.0f, 0.0f,     1.0f, 1.0f, // top right
-                0.0f,   0.0f, 0.0f,     1.0f, 0.0f, // bottom right
-                0.0f,   0.0f, 0.0f,     0.0f, 0.0f  // bottom left
+               -1f,   1f, 0.0f,     0.0f, 1.0f, // top left 
+                1f,   1f, 0.0f,     1.0f, 1.0f, // top right
+                1f,  -1f, 0.0f,     1.0f, 0.0f, // bottom right
+               -1f,  -1f, 0.0f,     0.0f, 0.0f  // bottom left
             };
 
-            var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x);
-            var posY = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y);
-            var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x + Width * Size);
-            var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, Y + Height * Size);
+            //var posX = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x);
+            //var posY = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, _y);
+            //var newWidth = GLExt.MapValue(0, Window.ViewPortWidth, -1, 1, _x + Width * Size);
+            //var newHeight = GLExt.MapValue(0, Window.ViewPortHeight, 1, -1, _y + Height * Size);
 
-            vertices[0] = posX;
-            vertices[1] = posY;
-            vertices[5] = newWidth;
-            vertices[6] = posY;
-            vertices[10] = newWidth;
-            vertices[11] = newHeight;
-            vertices[15] = posX;
-            vertices[16] = newHeight;
+            //vertices[0] = posX;
+            //vertices[1] = posY;
+            //vertices[5] = newWidth;
+            //vertices[6] = posY;
+            //vertices[10] = newWidth;
+            //vertices[11] = newHeight;
+            //vertices[15] = posX;
+            //vertices[16] = newHeight;
 
-
+            
             return vertices;
         }
 
@@ -150,6 +151,19 @@ namespace OpenTKTesting
             // We add an offset of 3, since the first vertex coordinate comes after the first vertex
             // and change the amount of data to 2 because there's only 2 floats for vertex coordinates
             GLExt.SetupVertexShaderAttribute(shader, "aTexCoord", 2, 3 * sizeof(float));
+
+            //TODO: This transform matrix code needs to be sent up to the GPU every time the size has changed
+            var scaleX = (float)Width / Window.ViewPortWidth;
+            var scaleY = (float)Height / Window.ViewPortHeight;
+
+            var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(0.0f));
+            var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
+
+            var transMatrix = rotation * scale;
+
+            int uniformTransformationLocation = GL.GetUniformLocation(shader.Handle, "transform");
+            GL.UniformMatrix4(uniformTransformationLocation, true, ref transMatrix);
+
 
             Shaders.Add(shader);
         }

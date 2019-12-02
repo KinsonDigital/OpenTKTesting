@@ -32,7 +32,7 @@ namespace OpenTKTesting
         {
             GLExt.EnableAlpha();
 
-            GLExt.ClearColor(255, 0, 0, 255);
+            GLExt.ClearColor(100, 148, 237, 255);
 
             _texture = new Texture("Gear.png");
             
@@ -48,8 +48,8 @@ namespace OpenTKTesting
 
             if (_elapsedMS >= 16f)
             {
-                _texture.X += 1;
-                _texture.Y += 1;
+                //_texture.X += 1;
+                //_texture.Y += 1;
                 _elapsedMS = 0;
             }
 

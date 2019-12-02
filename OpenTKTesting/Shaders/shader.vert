@@ -11,12 +11,15 @@ layout(location = 1) in vec2 aTexCoord;
 
 out vec2 texCoord;
 
+//This is for the transformation matrix
+uniform mat4 transform;
+
 void main(void)
 {
     // Then, we further the input texture coordinate to the output one.
     // texCoord can now be used in the fragment shader.
-    
     texCoord = aTexCoord;
 
-    gl_Position = vec4(aPosition, 1.0);
+	// Then all you have to do is multiply the vertices by the transformation matrix, and you'll see your transformation in the scene!
+    gl_Position = vec4(aPosition, 1.0) * transform;
 }
