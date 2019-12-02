@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
@@ -77,6 +78,12 @@ namespace OpenTKTesting
             GL.DrawElements(PrimitiveType.Triangles, texture.Indices.Length, DrawElementsType.UnsignedInt, 0);
         }
 
+
+        public static void SetUniformData(int vertShaderHandle, string uniformName, Matrix4 transformationMatrix)
+        {
+            int uniformTransformationLocation = GL.GetUniformLocation(vertShaderHandle, uniformName);
+            GL.UniformMatrix4(uniformTransformationLocation, true, ref transformationMatrix);
+        }
 
         public static void EnableAlpha()
         {

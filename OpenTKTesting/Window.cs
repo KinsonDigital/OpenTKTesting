@@ -48,8 +48,8 @@ namespace OpenTKTesting
 
             if (_elapsedMS >= 16f)
             {
-                //_texture.X += 1;
-                //_texture.Y += 1;
+                _texture.X += 25f * (float)e.Time;
+                _texture.Y += 25f * (float)e.Time;
                 _elapsedMS = 0;
             }
 

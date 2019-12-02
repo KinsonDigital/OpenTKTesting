@@ -15,34 +15,28 @@ namespace OpenTKTesting
     public class Texture : IDisposable
     {
         private readonly ImageLoader _imageLoader;
-        private int _x;
-        private int _y;
+        private float _x;
+        private float _y;
 
 
         #region Props
-        public int X
+        public float X
         {
             get => _x;
             set
             {
                 _x = value;
-                var data = MapToNDC();
-
-                VB.Bind();
-                VB.SetLayout(data);
+                UpdateTransformData(BuildTransformationMatrix());
             }
         }
 
-        public int Y
+        public float Y
         {
             get => _y;
             set
             {
                 _y = value;
-                var data = MapToNDC();
-
-                VB.Bind();
-                VB.SetLayout(data);
+                UpdateTransformData(BuildTransformationMatrix());
             }
         }
 
@@ -152,22 +146,34 @@ namespace OpenTKTesting
             // and change the amount of data to 2 because there's only 2 floats for vertex coordinates
             GLExt.SetupVertexShaderAttribute(shader, "aTexCoord", 2, 3 * sizeof(float));
 
-            //TODO: This transform matrix code needs to be sent up to the GPU every time the size has changed
-            var scaleX = (float)Width / Window.ViewPortWidth;
-            var scaleY = (float)Height / Window.ViewPortHeight;
+            ////TODO: This transform matrix code needs to be sent up to the GPU every time the size has changed
+            //var scaleX = (float)Width / Window.ViewPortWidth;
+            //var scaleY = (float)Height / Window.ViewPortHeight;
 
-            var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(0.0f));
-            var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
+            //var ndcX = GLExt.MapValue(0, Window.ViewPortWidth, -1f, 1f, _x);
+            //var ndcY = GLExt.MapValue(0, Window.ViewPortHeight, 1f, -1f, _y);
 
-            var transMatrix = rotation * scale;
-
-            int uniformTransformationLocation = GL.GetUniformLocation(shader.Handle, "transform");
-            GL.UniformMatrix4(uniformTransformationLocation, true, ref transMatrix);
-
+            ////NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
+            //var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(-90.0f));
+            //var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
+            //var posMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
+            //var transMatrix = rotation * scale * posMatrix;
 
             Shaders.Add(shader);
+
+            UpdateTransformData(BuildTransformationMatrix());
         }
 
+
+        private Matrix4 MultVector2(Matrix4 matrix, Vector2 vector)
+        {
+            matrix.M14 = matrix.M14 * vector.X;
+            matrix.M24 = matrix.M24 * vector.Y;
+            //matrix.M14 = matrix.M14 * 1;
+
+
+            return matrix;
+        }
 
         public void Dispose()
         {
@@ -181,6 +187,31 @@ namespace OpenTKTesting
             {
                 GL.DeleteProgram(shader.Handle);
             }
+        }
+
+
+        private Matrix4 BuildTransformationMatrix()
+        {
+            var scaleX = (float)Width / Window.ViewPortWidth;
+            var scaleY = (float)Height / Window.ViewPortHeight;
+
+            //NDC = Normalized Device Coordinates
+            var ndcX = GLExt.MapValue(0, Window.ViewPortWidth, -1f, 1f, _x);
+            var ndcY = GLExt.MapValue(0, Window.ViewPortHeight, 1f, -1f, _y);
+
+            //NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
+            var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(-90.0f));
+            var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
+            var posMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
+
+
+            return rotation * scale * posMatrix;
+        }
+
+
+        private void UpdateTransformData(Matrix4 transMatrix)
+        {
+            GLExt.SetUniformData(Shaders[0].Handle, "transform", transMatrix);
         }
         #endregion
     }
