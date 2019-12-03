@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace OpenTKTesting
 {
@@ -12,7 +12,7 @@ namespace OpenTKTesting
     {
         public readonly int Handle;
 
-        private readonly Dictionary<string, int> _uniformLocations;
+        private static readonly Dictionary<string, int> _uniformLocations = new Dictionary<string, int>();
 
 
         // This is how you create a simple shader.
@@ -30,41 +30,20 @@ namespace OpenTKTesting
             // Load vertex shader and compile
             // LoadSource is a simple function that just loads all text from the file whose path is given.
             var shaderSource = LoadSource(vertPath);
-
-            // GL.CreateShader will create an empty shader (obviously). The ShaderType enum denotes which type of shader will be created.
-            var vertexShader = GL.CreateShader(ShaderType.VertexShader);
-
-            // Now, bind the GLSL source code
-            GL.ShaderSource(vertexShader, shaderSource);
-
-            // And then compile
-            CompileShader(vertexShader);
-
+            var vertexShader = GLExt.CreateShader(ShaderType.VertexShader, shaderSource);
 
             // We do the same for the fragment shader
             shaderSource = LoadSource(fragPath);
-            var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, shaderSource);
-            CompileShader(fragmentShader);
-
+            var fragmentShader = GLExt.CreateShader(ShaderType.FragmentShader, shaderSource);
 
             // These two shaders must then be merged into a shader program, which can then be used by OpenGL.
             // To do this, create a program...
-            Handle = GL.CreateProgram();
-
-            // Attach both shaders...
-            GL.AttachShader(Handle, vertexShader);
-            GL.AttachShader(Handle, fragmentShader);
-
-            // And then link them together.
-            LinkProgram(Handle);
+            Handle = GLExt.CreateShaderProgram(vertexShader, fragmentShader);
 
             // When the shader program is linked, it no longer needs the individual shaders attacked to it; the compiled code is copied into the shader program.
             // Detach them, and then delete them.
-            GL.DetachShader(Handle, vertexShader);
-            GL.DetachShader(Handle, fragmentShader);
-            GL.DeleteShader(fragmentShader);
-            GL.DeleteShader(vertexShader);
+            GLExt.DestroyShader(Handle, vertexShader);
+            GLExt.DestroyShader(Handle, fragmentShader);
 
             // The shader is now ready to go, but first, we're going to cache all the shader uniform locations.
             // Querying this from the shader is very slow, so we do it once on initialization and reuse those values
@@ -72,9 +51,6 @@ namespace OpenTKTesting
 
             // First, we have to get the number of active uniforms in the shader.
             GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
-
-            // Next, allocate the dictionary to hold the locations.
-            _uniformLocations = new Dictionary<string, int>();
 
             // Loop over all the uniforms,
             for (var i = 0; i < numberOfUniforms; i++)
@@ -87,35 +63,6 @@ namespace OpenTKTesting
 
                 // and then add it to the dictionary.
                 _uniformLocations.Add(key, location);
-            }
-        }
-
-
-        private static void CompileShader(int shader)
-        {
-            // Try to compile the shader
-            GL.CompileShader(shader);
-
-            // Check for compilation errors
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out var code);
-            if (code != (int)All.True)
-            {
-                // We can use `GL.GetShaderInfoLog(shader)` to get information about the error.
-                throw new Exception($"Error occurred whilst compiling Shader({shader})");
-            }
-        }
-
-        private static void LinkProgram(int program)
-        {
-            // We link the program
-            GL.LinkProgram(program);
-
-            // Check for linking errors
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out var code);
-            if (code != (int)All.True)
-            {
-                // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
-                throw new Exception($"Error occurred whilst linking Program({program})");
             }
         }
 

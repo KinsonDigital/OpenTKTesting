@@ -167,6 +167,72 @@ namespace OpenTKTesting
 
 
         public static void UseShader(int shaderHandle) => GL.UseProgram(shaderHandle);
+
+
+        public static int CreateShader(ShaderType shaderType, string shaderSrc)
+        {
+            var fragmentShader = GL.CreateShader(shaderType);
+            GL.ShaderSource(fragmentShader, shaderSrc);
+            CompileShader(fragmentShader);
+
+
+            return fragmentShader;
+        }
+
+
+        public static void CompileShader(int shaderHandle)
+        {
+            // Try to compile the shader
+            GL.CompileShader(shaderHandle);
+
+            // Check for compilation errors
+            GL.GetShader(shaderHandle, ShaderParameter.CompileStatus, out var code);
+
+            if (code != (int)All.True)
+            {
+                // We can use `GL.GetShaderInfoLog(shader)` to get information about the error.
+                throw new Exception($"Error occurred whilst compiling Shader({shaderHandle})");
+            }
+        }
+
+
+        public static void DestroyShader(int program, int shaderHandle)
+        {
+            GL.DetachShader(program, shaderHandle);
+            GL.DeleteShader(shaderHandle);
+        }
+
+
+        public static int CreateShaderProgram(int vertexShaderHandle, int fragmentShaderHandle)
+        {
+            var programHandle = GL.CreateProgram();
+
+            //Attach both shaders...
+            GL.AttachShader(programHandle, vertexShaderHandle);
+            GL.AttachShader(programHandle, fragmentShaderHandle);
+
+            //Link them together
+            LinkProgram(programHandle);
+
+
+            return programHandle;
+        }
+
+
+        private static void LinkProgram(int programHHandle)
+        {
+            // We link the program
+            GL.LinkProgram(programHHandle);
+
+            // Check for linking errors
+            GL.GetProgram(programHHandle, GetProgramParameterName.LinkStatus, out var code);
+
+            if (code != (int)All.True)
+            {
+                // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
+                throw new Exception($"Error occurred whilst linking Program({programHHandle})");
+            }
+        }
         #endregion
 
 

@@ -1,4 +1,4 @@
-﻿#version 330
+﻿#version 330 core
 
 out vec4 outputColor;
 
@@ -10,9 +10,18 @@ in vec2 texCoord;
 // Multiple samplers will be demonstrated in section 1.5
 uniform sampler2D texture0;
 
-void main()
+void main ()
 {
     // To use a texture, you call the texture() function.
     // It takes two parameters: the sampler to use, and a vec2, used as texture coordinates
-    outputColor = texture(texture0, texCoord);
+    outputColor = texture(texture0, texCoord);//KEEP
+
+	vec3 outputClrToMix = vec3(outputColor.r, outputColor.g, outputColor.b);
+
+	vec3 mixClr = vec3(1, 0, 0);
+	vec3 colorResult = mix(outputClrToMix, mixClr, 0.5);
+
+	outputColor.r = colorResult.r;
+	outputColor.g = colorResult.g;
+	outputColor.b = colorResult.b;
 }

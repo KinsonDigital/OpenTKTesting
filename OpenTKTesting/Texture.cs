@@ -48,6 +48,8 @@ namespace OpenTKTesting
 
         public int Height { get; set; }
 
+        public System.Drawing.Color TintColor { get; set; }
+
         internal int Handle { get; set; }
 
         internal List<Shader> Shaders { get; set; } = new List<Shader>();
@@ -123,19 +125,6 @@ namespace OpenTKTesting
             // We add an offset of 3, since the first vertex coordinate comes after the first vertex
             // and change the amount of data to 2 because there's only 2 floats for vertex coordinates
             GLExt.SetupVertexShaderAttribute(shader, "aTexCoord", 2, 3 * sizeof(float));
-
-            ////TODO: This transform matrix code needs to be sent up to the GPU every time the size has changed
-            //var scaleX = (float)Width / Window.ViewPortWidth;
-            //var scaleY = (float)Height / Window.ViewPortHeight;
-
-            //var ndcX = GLExt.MapValue(0, Window.ViewPortWidth, -1f, 1f, _x);
-            //var ndcY = GLExt.MapValue(0, Window.ViewPortHeight, 1f, -1f, _y);
-
-            ////NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
-            //var rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(-90.0f));
-            //var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
-            //var posMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
-            //var transMatrix = rotation * scale * posMatrix;
 
             Shaders.Add(shader);
 
