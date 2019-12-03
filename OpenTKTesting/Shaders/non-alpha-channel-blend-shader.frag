@@ -16,7 +16,7 @@ void main ()
 {
     outputColor = texture(texture0, texCoord);
 
-	vec3 tintClr = vec3(0.0, 0.0, 0.5);
+	vec4 tintClr = vec4(1.0, 0.0, 0.0, 0.5);
 	
 	outputColor.r = min(outputColor.r + tintClr.r, 255);
 	outputColor.g = min(outputColor.g + tintClr.g, 255);

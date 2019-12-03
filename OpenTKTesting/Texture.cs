@@ -166,7 +166,7 @@ namespace OpenTKTesting
             angleRadians *= -1;
 
             var rotation = Matrix4.CreateRotationZ(angleRadians);
-            var scale = Matrix4.CreateScale(scaleY, scaleX, 1f);
+            var scale = Matrix4.CreateScale(scaleX, scaleY, 1f);
             var posMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
 
 

@@ -190,8 +190,9 @@ namespace OpenTKTesting
 
             if (code != (int)All.True)
             {
+                var errorInfo = GL.GetShaderInfoLog(shaderHandle);
                 // We can use `GL.GetShaderInfoLog(shader)` to get information about the error.
-                throw new Exception($"Error occurred whilst compiling Shader({shaderHandle})");
+                throw new Exception($"Error occurred while compiling Shader({shaderHandle})\n{errorInfo}");
             }
         }
 
