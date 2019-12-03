@@ -11,13 +11,12 @@ out vec4 outputColor;
 in vec2 texCoord;
 
 uniform sampler2D texture0;
+uniform vec3 tintClr;
 
 void main ()
 {
     outputColor = texture(texture0, texCoord);
 
-	vec3 tintClr = vec3(0.0, 0.0, 0.5);
-	
 	outputColor.r = min(outputColor.r + tintClr.r, 255);
 	outputColor.g = min(outputColor.g + tintClr.g, 255);
 	outputColor.b = min(outputColor.b + tintClr.b, 255);

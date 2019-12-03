@@ -1,4 +1,4 @@
-﻿using OpenTK;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
@@ -26,7 +26,7 @@ namespace OpenTKTesting
             set
             {
                 _x = value;
-                UpdateTransformData(BuildTransformationMatrix());
+                Update();
             }
         }
 
@@ -36,7 +36,7 @@ namespace OpenTKTesting
             set
             {
                 _y = value;
-                UpdateTransformData(BuildTransformationMatrix());
+                Update();
             }
         }
 
@@ -66,6 +66,7 @@ namespace OpenTKTesting
         #endregion
 
 
+        #region Constructors
         // Create texture from path.
         public Texture(string name)
         {
@@ -96,8 +97,10 @@ namespace OpenTKTesting
 
             CreateDefaultShader();
         }
+        #endregion
 
 
+        #region Pubic Methods
         // Activate texture
         // Multiple textures can be bound, if your shader needs more than just one.
         // If you want to do that, use GL.ActiveTexture to set which slot GL.BindTexture binds to.
@@ -107,6 +110,13 @@ namespace OpenTKTesting
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
+
+
+        public void Update()
+        {
+            UpdateTransformData(BuildTransformationMatrix());
+        }
+        #endregion
 
 
         #region Private Methods
@@ -142,7 +152,7 @@ namespace OpenTKTesting
 
             foreach (var shader in Shaders)
             {
-                GL.DeleteProgram(shader.Handle);
+                GL.DeleteProgram(shader.ProgramHandle);
             }
         }
 
@@ -176,7 +186,7 @@ namespace OpenTKTesting
 
         private void UpdateTransformData(Matrix4 transMatrix)
         {
-            GLExt.SetUniformData(Shaders[0].Handle, "transform", transMatrix);
+            GLExt.SetMat4Uniform(Shaders[0].ProgramHandle, "transform", transMatrix);
         }
         #endregion
     }

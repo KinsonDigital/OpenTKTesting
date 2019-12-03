@@ -10,11 +10,12 @@ namespace OpenTKTesting
     // A simple class meant to help create shaders.
     public class Shader
     {
-        public readonly int Handle;
+        public readonly int ProgramHandle;
 
         private static readonly Dictionary<string, int> _uniformLocations = new Dictionary<string, int>();
 
 
+        #region Constructors
         // This is how you create a simple shader.
         // Shaders are written in GLSL, which is a language very similar to C in its semantics.
         // The GLSL source is compiled *at runtime*, so it can optimize itself for the graphics card it's currently being used on.
@@ -30,47 +31,55 @@ namespace OpenTKTesting
             // Load vertex shader and compile
             // LoadSource is a simple function that just loads all text from the file whose path is given.
             var shaderSource = LoadSource(vertPath);
-            var vertexShader = GLExt.CreateShader(ShaderType.VertexShader, shaderSource);
+            VertexShaderHandle = GLExt.CreateShader(ShaderType.VertexShader, shaderSource);
 
             // We do the same for the fragment shader
             shaderSource = LoadSource(fragPath);
-            var fragmentShader = GLExt.CreateShader(ShaderType.FragmentShader, shaderSource);
+            FragmentShaderHandle = GLExt.CreateShader(ShaderType.FragmentShader, shaderSource);
 
             // These two shaders must then be merged into a shader program, which can then be used by OpenGL.
             // To do this, create a program...
-            Handle = GLExt.CreateShaderProgram(vertexShader, fragmentShader);
+            ProgramHandle = GLExt.CreateShaderProgram(VertexShaderHandle, FragmentShaderHandle);
 
             // When the shader program is linked, it no longer needs the individual shaders attacked to it; the compiled code is copied into the shader program.
             // Detach them, and then delete them.
-            GLExt.DestroyShader(Handle, vertexShader);
-            GLExt.DestroyShader(Handle, fragmentShader);
+            GLExt.DestroyShader(ProgramHandle, VertexShaderHandle);
+            GLExt.DestroyShader(ProgramHandle, FragmentShaderHandle);
 
             // The shader is now ready to go, but first, we're going to cache all the shader uniform locations.
             // Querying this from the shader is very slow, so we do it once on initialization and reuse those values
             // later.
 
             // First, we have to get the number of active uniforms in the shader.
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+            GL.GetProgram(ProgramHandle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
 
             // Loop over all the uniforms,
             for (var i = 0; i < numberOfUniforms; i++)
             {
                 // get the name of this uniform,
-                var key = GL.GetActiveUniform(Handle, i, out _, out _);
+                var key = GL.GetActiveUniform(ProgramHandle, i, out _, out _);
 
                 // get the location,
-                var location = GL.GetUniformLocation(Handle, key);
+                var location = GL.GetUniformLocation(ProgramHandle, key);
 
                 // and then add it to the dictionary.
                 _uniformLocations.Add(key, location);
             }
         }
+        #endregion
+
+
+        #region Props
+        public int VertexShaderHandle { get; private set; }
+
+        public int FragmentShaderHandle { get; private set; }
+        #endregion
 
 
         // A wrapper function that enables the shader program.
         public void Use()
         {
-            GLExt.UseShader(Handle);
+            GLExt.UseShader(ProgramHandle);
         }
 
 
@@ -78,7 +87,7 @@ namespace OpenTKTesting
         // you can omit the layout(location=X) lines in the vertex shader, and use this in VertexAttribPointer instead of the hardcoded values.
         public int GetAttribLocation(string attribName)
         {
-            return GL.GetAttribLocation(Handle, attribName);
+            return GL.GetAttribLocation(ProgramHandle, attribName);
         }
 
 
@@ -107,7 +116,7 @@ namespace OpenTKTesting
         /// <param name="data">The data to set</param>
         public void SetInt(string name, int data)
         {
-            GL.UseProgram(Handle);
+            GL.UseProgram(ProgramHandle);
             GL.Uniform1(_uniformLocations[name], data);
         }
 
@@ -118,7 +127,7 @@ namespace OpenTKTesting
         /// <param name="data">The data to set</param>
         public void SetFloat(string name, float data)
         {
-            GL.UseProgram(Handle);
+            GL.UseProgram(ProgramHandle);
             GL.Uniform1(_uniformLocations[name], data);
         }
 
@@ -134,7 +143,7 @@ namespace OpenTKTesting
         /// </remarks>
         public void SetMatrix4(string name, Matrix4 data)
         {
-            GL.UseProgram(Handle);
+            GL.UseProgram(ProgramHandle);
             GL.UniformMatrix4(_uniformLocations[name], true, ref data);
         }
 
@@ -145,7 +154,7 @@ namespace OpenTKTesting
         /// <param name="data">The data to set</param>
         public void SetVector3(string name, Vector3 data)
         {
-            GL.UseProgram(Handle);
+            GL.UseProgram(ProgramHandle);
             GL.Uniform3(_uniformLocations[name], data);
         }
     }

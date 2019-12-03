@@ -74,10 +74,10 @@ namespace OpenTKTesting
         }
 
 
-        public static void SetUniformData(int vertShaderHandle, string uniformName, Matrix4 transformationMatrix)
+        public static void SetMat4Uniform(int shaderProgramHandle, string uniformName, Matrix4 matrix)
         {
-            int uniformTransformationLocation = GL.GetUniformLocation(vertShaderHandle, uniformName);
-            GL.UniformMatrix4(uniformTransformationLocation, true, ref transformationMatrix);
+            var uniformTransformationLocation = GL.GetUniformLocation(shaderProgramHandle, uniformName);
+            GL.UniformMatrix4(uniformTransformationLocation, true, ref matrix);
         }
 
 
@@ -163,7 +163,7 @@ namespace OpenTKTesting
         }
 
 
-        public static void UseShader(Shader shader) => UseShader(shader.Handle);
+        public static void UseShader(Shader shader) => UseShader(shader.ProgramHandle);
 
 
         public static void UseShader(int shaderHandle) => GL.UseProgram(shaderHandle);

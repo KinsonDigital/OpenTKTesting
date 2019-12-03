@@ -99,6 +99,12 @@ namespace OpenTKTesting
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
+
+            ViewPortWidth = Width;
+            ViewPortHeight = Height;
+
+            _texture.Update();
+
             base.OnResize(e);
         }
 
