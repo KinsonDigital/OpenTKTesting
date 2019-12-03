@@ -16,12 +16,8 @@ void main ()
     // It takes two parameters: the sampler to use, and a vec2, used as texture coordinates
     outputColor = texture(texture0, texCoord);//KEEP
 
-	vec3 outputClrToMix = vec3(outputColor.r, outputColor.g, outputColor.b);
+	vec4 tintColor = vec4(0.5, 0.0, 0.0, 1.0);
+	vec4 colorResult = outputColor * tintColor;
 
-	vec3 mixClr = vec3(1, 0, 0);
-	vec3 colorResult = mix(outputClrToMix, mixClr, 0.5);
-
-	outputColor.r = colorResult.r;
-	outputColor.g = colorResult.g;
-	outputColor.b = colorResult.b;
+	outputColor = outputColor * tintColor;
 }
