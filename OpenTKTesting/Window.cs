@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
@@ -16,6 +17,7 @@ namespace OpenTKTesting
         private readonly Renderer _renderer;
         private static bool _beginInvoked;
         private bool _increaseSize = true;
+        private bool _increaseRed;
         #endregion
 
 
@@ -73,6 +75,8 @@ namespace OpenTKTesting
                 }
 
                 _elapsedMS = 0;
+
+                RandomColor();
             }
 
             if (_currentKeyState.IsKeyDown(Key.Escape))
@@ -81,6 +85,20 @@ namespace OpenTKTesting
             _prevKeyState = _currentKeyState;
 
             base.OnUpdateFrame(e);
+        }
+
+        private void RandomColor()
+        {
+            if (_texture.TintColor.R >= 255)
+            {
+                _increaseRed = false;
+            }
+            else if (_texture.TintColor.R <= 0)
+            {
+                _increaseRed = true;
+            }
+
+            _texture.TintColor = Color.FromArgb(255, _increaseRed ? _texture.TintColor.R + 1 : _texture.TintColor.R - 1, 0, 0);
         }
 
 

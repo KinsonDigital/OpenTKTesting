@@ -7,7 +7,9 @@ using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using NETColor = System.Drawing.Color;
 
 namespace OpenTKTesting
 {
@@ -17,6 +19,7 @@ namespace OpenTKTesting
         private readonly ImageLoader _imageLoader;
         private float _x;
         private float _y;
+        private NETColor _tintColor = NETColor.White;
 
 
         #region Props
@@ -48,7 +51,23 @@ namespace OpenTKTesting
 
         public int Height { get; set; }
 
-        public System.Drawing.Color TintColor { get; set; }
+        public NETColor TintColor
+        {
+            get => _tintColor;
+            set
+            {
+                _tintColor = value;
+
+                var red = GLExt.MapValue(0, 255, 0, 1, _tintColor.R);
+                var green = GLExt.MapValue(0, 255, 0, 1, _tintColor.G);
+                var blue = GLExt.MapValue(0, 255, 0, 1, _tintColor.B);
+                var alpha = GLExt.MapValue(0, 255, 0, 1, _tintColor.A);
+
+                //Use this for vec3 uniform data
+                //GLExt.SetVec3Uniform(Shaders[0].ProgramHandle, "u_tintClr", new Vector3(red, green, blue));
+                GLExt.SetVec4Uniform(Shaders[0].ProgramHandle, "u_tintClr", new Vector4(red, green, blue, 0.5f));
+            }
+        }
 
         internal int Handle { get; set; }
 
@@ -96,6 +115,8 @@ namespace OpenTKTesting
             VA = new VertexArray(VB, IB);
 
             CreateDefaultShader();
+
+            TintColor = NETColor.Red;
         }
         #endregion
 

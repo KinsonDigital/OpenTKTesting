@@ -81,6 +81,30 @@ namespace OpenTKTesting
         }
 
 
+        public static void SetVec3Uniform(int shaderProgramHandle, string uniformName, Vector3 vector)
+        {
+            //TODO: Make use of the cached uniform locations in the Shader class.
+            var vec3Location = GL.GetUniformLocation(shaderProgramHandle, uniformName);
+
+            if (vec3Location == -1)
+                throw new Exception($"The uniform with the name '{uniformName}' does not exist.");
+
+            GL.Uniform3(vec3Location, ref vector);
+        }
+
+
+        public static void SetVec4Uniform(int shaderProgramHandle, string uniformName, Vector4 vector)
+        {
+            //TODO: Make use of the cached uniform locations in the Shader class.
+            var vec4Location = GL.GetUniformLocation(shaderProgramHandle, uniformName);
+
+            if (vec4Location == -1)
+                throw new Exception($"The uniform with the name '{uniformName}' does not exist.");
+
+            GL.Uniform4(vec4Location, ref vector);
+        }
+
+
         public static void EnableAlpha()
         {
             GL.Enable(EnableCap.Blend);

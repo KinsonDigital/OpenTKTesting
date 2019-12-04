@@ -2,6 +2,8 @@
 This is an example of blending without using alpha channel.
 
 Src: https://stackoverflow.com/questions/726549/algorithm-for-additive-color-mixing-for-rgb-values
+
+This is additive blending
 */
 
 #version 330 core
