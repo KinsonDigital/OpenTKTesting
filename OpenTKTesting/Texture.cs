@@ -64,8 +64,7 @@ namespace OpenTKTesting
                 var alpha = GLExt.MapValue(0, 255, 0, 1, _tintColor.A);
 
                 //Use this for vec3 uniform data
-                //GLExt.SetVec3Uniform(Shaders[0].ProgramHandle, "u_tintClr", new Vector3(red, green, blue));
-                GLExt.SetVec4Uniform(Shaders[0].ProgramHandle, "u_tintClr", new Vector4(red, green, blue, 0.5f));
+                GLExt.SetVec4Uniform(Shaders[0].ProgramHandle, "u_tintClr", new Vector4(red, green, blue, alpha));
             }
         }
 

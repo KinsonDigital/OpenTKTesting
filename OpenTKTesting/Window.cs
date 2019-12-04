@@ -17,7 +17,7 @@ namespace OpenTKTesting
         private readonly Renderer _renderer;
         private static bool _beginInvoked;
         private bool _increaseSize = true;
-        private bool _increaseRed;
+        private bool _increaseAlpha;
         #endregion
 
 
@@ -89,16 +89,16 @@ namespace OpenTKTesting
 
         private void RandomColor()
         {
-            if (_texture.TintColor.R >= 255)
+            if (_texture.TintColor.A >= 255)
             {
-                _increaseRed = false;
+                _increaseAlpha = false;
             }
-            else if (_texture.TintColor.R <= 0)
+            else if (_texture.TintColor.A <= 0)
             {
-                _increaseRed = true;
+                _increaseAlpha = true;
             }
 
-            _texture.TintColor = Color.FromArgb(255, _increaseRed ? _texture.TintColor.R + 1 : _texture.TintColor.R - 1, 0, 0);
+            _texture.TintColor = Color.FromArgb(_increaseAlpha ? _texture.TintColor.A + 1 : _texture.TintColor.A - 1, 255, 0, 255);
         }
 
 
