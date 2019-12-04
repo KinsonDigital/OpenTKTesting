@@ -636,6 +636,8 @@ namespace RenderWindowTesting
         {
             if (UseColorsFromList)
             {
+                var randomResult = TintColors is null || TintColors.Length == 0 ? Color.FromArgb(255, 255, 255, 255) : TintColors[Randomizer.GetValue(0, TintColors.Length - 1)];
+
                 return TintColors is null || TintColors.Length == 0 ? Color.FromArgb(255, 255, 255, 255) : TintColors[Randomizer.GetValue(0, TintColors.Length - 1)];
             }
             else

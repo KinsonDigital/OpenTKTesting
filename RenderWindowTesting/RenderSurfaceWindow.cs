@@ -44,7 +44,7 @@ namespace RenderWindowTesting
         /// <param name="sdl">Used to invoke SDL specific operations.</param>
         /// <param name="taskService">Used to manage async tasks.</param>
         /// <param name="nativeMethods">Used to access window specific API functionality.</param>
-        public RenderSurfaceWindow(IGLInvoker gl, ParticleEngine<Texture> particleEngine) : base(500, 500, GraphicsMode.Default, "Test Render Surface Window")
+        public RenderSurfaceWindow(IGLInvoker gl, ParticleEngine<Texture> particleEngine) : base(500, 500, GraphicsMode.Default, string.Empty)
         {
             ViewPortWidth = 500;
             ViewPortHeight = 500;
@@ -174,8 +174,14 @@ namespace RenderWindowTesting
             {
                 var matrix = BuildTransformationMatrix(p.Position.X, p.Position.Y, p.Texture.Width, p.Texture.Height, p.Size, p.Angle);
 
+                var tintColor = p.TintColor.ToVector4();
+
+                tintColor = tintColor.MapValues(0, 255, 0, 1);
+
+                tintColor.W = 0.5f;
+
                 //Update the tint color on the GPU
-                _gl.SetVec4Uniform(p.Texture.Shaders[0].ProgramHandle, "u_tintClr", p.Texture.TintColor.ToVector4());
+                _gl.SetVec4Uniform(p.Texture.Shaders[0].ProgramHandle, "u_tintClr", tintColor);
 
                 //Update the transformation matrix on the GPU
                 _gl.SetMat4Uniform(p.Texture.Shaders[0].ProgramHandle, "transform", matrix);
@@ -202,6 +208,20 @@ namespace RenderWindowTesting
         protected override void OnUnload(EventArgs e)
         {
             base.OnUnload(e);
+        }
+
+
+        protected override void OnResize(EventArgs e)
+        {
+            _particleEngine.Particles.ToList().ForEach(p =>
+            {
+                var matrix = BuildTransformationMatrix(p.Position.X, p.Position.Y, p.Texture.Width, p.Texture.Height, p.Size, p.Angle);
+
+                //Update the transformation matrix on the GPU
+                _gl.SetMat4Uniform(p.Texture.Shaders[0].ProgramHandle, "transform", matrix);
+            });
+
+            base.OnResize(e);
         }
 
 

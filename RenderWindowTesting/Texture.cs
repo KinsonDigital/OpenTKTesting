@@ -16,26 +16,6 @@ namespace RenderWindowTesting
 
 
         #region Props
-        //public float X
-        //{
-        //    get => _x;
-        //    set
-        //    {
-        //        _x = value;
-        //        Update();
-        //    }
-        //}
-
-        //public float Y
-        //{
-        //    get => _y;
-        //    set
-        //    {
-        //        _y = value;
-        //        Update();
-        //    }
-        //}
-
         public float Angle { get; set; }
 
         public float Size { get; set; } = 1f;
