@@ -12,6 +12,12 @@ namespace RenderWindowTesting
 
         static void Main(string[] args)
         {
+            var renderEngine = new RenderEngine();
+
+            renderEngine.StartEngine();
+
+            return;
+
             _gl = new GLInvoker();
             _randomService = new TrueRandomizerService();
 
