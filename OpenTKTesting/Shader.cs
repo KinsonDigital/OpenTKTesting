@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL4;
 namespace OpenTKTesting
 {
     // A simple class meant to help create shaders.
-    public class Shader
+    public class Shader : IDisposable
     {
         public readonly int ProgramHandle;
 
@@ -156,6 +156,11 @@ namespace OpenTKTesting
         {
             GL.UseProgram(ProgramHandle);
             GL.Uniform3(_uniformLocations[name], data);
+        }
+
+        public void Dispose()
+        {
+            GL.DeleteProgram(ProgramHandle);
         }
     }
 }

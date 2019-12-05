@@ -170,10 +170,7 @@ namespace OpenTKTesting
 
             GL.DeleteTexture(Handle);
 
-            foreach (var shader in Shaders)
-            {
-                GL.DeleteProgram(shader.ProgramHandle);
-            }
+            Shaders.ForEach(s => s.Dispose());
         }
 
 
