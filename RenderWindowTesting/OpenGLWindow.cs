@@ -14,7 +14,7 @@ namespace RenderWindowTesting
     /// <summary>
     /// Provides rendering surface window to render particle graphics to.
     /// </summary>
-    public class RenderSurfaceWindow : GameWindow
+    public class OpenGLWindow : GameWindow
     {
         #region Private Fields
         private IGLInvoker _gl;
@@ -38,13 +38,13 @@ namespace RenderWindowTesting
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="RenderSurfaceWindow"/>.
+        /// Creates a new instance of <see cref="OpenGLWindow"/>.
         /// </summary>
         /// <param name="dispatcher">The dispatcher used to execute the size and location related events on the main UI thread.</param>
         /// <param name="sdl">Used to invoke SDL specific operations.</param>
         /// <param name="taskService">Used to manage async tasks.</param>
         /// <param name="nativeMethods">Used to access window specific API functionality.</param>
-        public RenderSurfaceWindow(IGLInvoker gl, ParticleEngine<Texture> particleEngine) : base(500, 500, GraphicsMode.Default, string.Empty)
+        public OpenGLWindow(IGLInvoker gl, ParticleEngine<Texture> particleEngine) : base(500, 500, GraphicsMode.Default, string.Empty)
         {
             ViewPortWidth = 500;
             ViewPortHeight = 500;
@@ -85,21 +85,21 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Gets or sets a value indicating if the <see cref="RenderSurfaceWindow"/>
+        /// Gets or sets a value indicating if the <see cref="OpenGLWindow"/>
         /// has or does not have a border and title bar.
         /// </summary>
         //TODO: This can be removed
         public bool IsBorderless => WindowBorder == WindowBorder.Hidden;
 
         /// <summary>
-        /// Gets or sets a value indicating if the <see cref="RenderSurfaceWindow"/>
+        /// Gets or sets a value indicating if the <see cref="OpenGLWindow"/>
         /// is or is not resizable.
         /// </summary>
         ////TODO: This can be removed
         public bool IsResizable => WindowBorder == WindowBorder.Resizable;
 
         /// <summary>
-        /// Gets or sets a value indicating if the <see cref="RenderSurfaceWindow"/>
+        /// Gets or sets a value indicating if the <see cref="OpenGLWindow"/>
         /// is or is not always on top of other windows.
         /// </summary>
         //TODO: This might still be needed but if so, needs to use windows interop
@@ -126,7 +126,7 @@ namespace RenderWindowTesting
         }
 
         /// <summary>
-        /// Gets or sets a value indicating if the <see cref="RenderSurfaceWindow"/>
+        /// Gets or sets a value indicating if the <see cref="OpenGLWindow"/>
         /// will or will not be shown in the task bar.
         /// </summary>
         //TODO: Check this out and immplement.  This will probably still rely on windows interop
@@ -226,14 +226,14 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Hides the <see cref="RenderSurfaceWindow"/>.
+        /// Hides the <see cref="OpenGLWindow"/>.
         /// </summary>
         //TODO: This can be removed later
         public void Hide() => Visible = false;
 
 
         /// <summary>
-        /// Activates the <see cref="RenderSurfaceWindow"/>.  This will bring the window
+        /// Activates the <see cref="OpenGLWindow"/>.  This will bring the window
         /// in front of all the windows.
         /// </summary>
         //TODO: This might have to be done via windows interop
@@ -241,7 +241,7 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Minimizes the <see cref="RenderSurfaceWindow"/>.
+        /// Minimizes the <see cref="OpenGLWindow"/>.
         /// </summary>
         //TODO: This can be removed
         public void Minimize()
@@ -251,7 +251,7 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Maximizes the <see cref="RenderSurfaceWindow"/>.
+        /// Maximizes the <see cref="OpenGLWindow"/>.
         /// </summary>
         //TODO: This can be removed
         public void Maximize()
@@ -261,7 +261,7 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Restores the <see cref="RenderSurfaceWindow"/>.
+        /// Restores the <see cref="OpenGLWindow"/>.
         /// </summary>
         public void Restore()
         {
@@ -270,7 +270,7 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Gets the surface handle of the <see cref="RenderSurfaceWindow"/>.
+        /// Gets the surface handle of the <see cref="OpenGLWindow"/>.
         /// </summary>
         /// <returns></returns>
         //TODO: This can be removed.  All rendering will now be done in the window
@@ -278,7 +278,7 @@ namespace RenderWindowTesting
 
 
         /// <summary>
-        /// Closes the <see cref="RenderSurfaceWindow"/>.
+        /// Closes the <see cref="OpenGLWindow"/>.
         /// </summary>
         //TODO: This can be removed
         public void Close()

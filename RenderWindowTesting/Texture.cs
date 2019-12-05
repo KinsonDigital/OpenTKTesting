@@ -152,15 +152,15 @@ namespace RenderWindowTesting
 
         private Matrix4 BuildTransformationMatrix()
         {
-            var scaleX = (float)Width / RenderSurfaceWindow.ViewPortWidth;
-            var scaleY = (float)Height / RenderSurfaceWindow.ViewPortHeight;
+            var scaleX = (float)Width / OpenGLWindow.ViewPortWidth;
+            var scaleY = (float)Height / OpenGLWindow.ViewPortHeight;
 
             scaleX *= Size;
             scaleY *= Size;
 
             //NDC = Normalized Device Coordinates
-            var ndcX = _x.MapValue(0, RenderSurfaceWindow.ViewPortWidth, -1f, 1f);
-            var ndcY = _y.MapValue(0, RenderSurfaceWindow.ViewPortHeight, 1f, -1f);
+            var ndcX = _x.MapValue(0, OpenGLWindow.ViewPortWidth, -1f, 1f);
+            var ndcY = _y.MapValue(0, OpenGLWindow.ViewPortHeight, 1f, -1f);
 
             //NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
             var angleRadians = MathHelper.DegreesToRadians(Angle);

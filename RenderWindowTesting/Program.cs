@@ -33,7 +33,7 @@ namespace RenderWindowTesting
             _particleEngine.ApplySetup(setup);
 
 
-            using var window = new RenderSurfaceWindow(_gl, _particleEngine);
+            using var window = new OpenGLWindow(_gl, _particleEngine);
 
             window.Run(60.0);
         }
