@@ -78,6 +78,7 @@ namespace RenderWindowTesting
             set => Location = new Point(Location.X, value);
         }
 
+        public bool IsRunning { get; set; }
 
         public static int ViewPortWidth { get; private set; }
 
@@ -150,12 +151,23 @@ namespace RenderWindowTesting
 
 
         #region Public Methods
+        public void Play() => IsRunning = true;
+
+
+        public void Pause() => IsRunning = false;
+
+
+        public void Restart()
+        {
+            Pause();
+            ReloadTextures();
+            Play();
+        }
+
+
         protected override void OnLoad(EventArgs e)
         {
-            _texturePaths.ForEach(path =>
-            {
-                _particleEngine.Add(new Texture(path));
-            });
+            LoadTextures();
 
             base.OnLoad(e);
         }
@@ -195,6 +207,9 @@ namespace RenderWindowTesting
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            if (!IsRunning)
+                return;
+
             Begin();
 
             _particleEngine.Particles.ToList().ForEach(p => Draw(p));
@@ -460,6 +475,33 @@ namespace RenderWindowTesting
 
 
             return rotation * scale * posMatrix;
+        }
+
+
+        private void LoadTextures()
+        {
+            _texturePaths.ForEach(path =>
+            {
+                _particleEngine.Add(new Texture(path));
+            });
+        }
+
+
+        private void UnloadTextures()
+        {
+            _particleEngine.ToList().ForEach(p =>
+            {
+                p.Dispose();
+            });
+
+            _particleEngine.Clear();
+        }
+
+
+        private void ReloadTextures()
+        {
+            UnloadTextures();
+            LoadTextures();
         }
         #endregion
     }

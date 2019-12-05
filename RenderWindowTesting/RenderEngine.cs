@@ -21,10 +21,25 @@ namespace RenderWindowTesting
         }
 
 
+        public bool IsRunning => _glWIndow.IsRunning;
+
+
         public void StartEngine()
         {
             SetupTask();
         }
+
+
+        public void StopEngine() => throw new NotImplementedException();
+
+
+        public void Play() => _glWIndow.Play();
+
+
+        public void Pause() => _glWIndow.Pause();
+
+
+        public void Restart() => _glWIndow.Restart();
 
 
         private void SetupTask()
@@ -36,6 +51,8 @@ namespace RenderWindowTesting
                 _glWIndow = new OpenGLWindow(new GLInvoker(), _particleEngine);
                 _glWIndow.Run(60.0);
             }, _glWinTaskTokenSrc.Token);
+
+            _glWinTask.Start();
         }
     }
 }

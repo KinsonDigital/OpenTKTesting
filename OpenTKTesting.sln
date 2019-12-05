@@ -7,20 +7,36 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTKTesting", "OpenTKTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenderWindowTesting", "RenderWindowTesting\RenderWindowTesting.csproj", "{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFTestingUI", "WPFTestingUI\WPFTestingUI.csproj", "{7485ABC9-3D1B-4108-8624-9DAA45F61067}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32A31420-800D-4642-96AE-B72BEA3578B9}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Debug|x64.ActiveCfg = Debug|x64
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Debug|x64.Build.0 = Debug|x64
+		{32A31420-800D-4642-96AE-B72BEA3578B9}.Release|Any CPU.ActiveCfg = Release|x64
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Release|x64.ActiveCfg = Release|x64
 		{32A31420-800D-4642-96AE-B72BEA3578B9}.Release|x64.Build.0 = Release|x64
+		{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}.Debug|x64.ActiveCfg = Debug|x64
 		{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}.Debug|x64.Build.0 = Debug|x64
+		{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}.Release|Any CPU.ActiveCfg = Release|x64
 		{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}.Release|x64.ActiveCfg = Release|x64
 		{D8D2FB0D-8C51-46C5-A33D-3AB47BF0DEA4}.Release|x64.Build.0 = Release|x64
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Debug|x64.Build.0 = Debug|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Release|x64.ActiveCfg = Release|Any CPU
+		{7485ABC9-3D1B-4108-8624-9DAA45F61067}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
