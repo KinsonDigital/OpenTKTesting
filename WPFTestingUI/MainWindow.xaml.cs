@@ -1,4 +1,4 @@
-﻿using RenderWindowTesting;
+﻿using WPFTestingUI.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,58 +14,54 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OpenTK.Platform;
+using OpenTK.Graphics.OpenGL4;
+using System.Windows.Interop;
+using OpenTK.Graphics;
+using OpenTK.Platform;
 
 namespace WPFTestingUI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IWindowInfo
     {
         private RenderEngine _renderEngine;
-        private Task _engineStartTask;
-        private CancellationTokenSource _engineStartTaskTokenSrc;
-
+        private IWindowInfo _windowInfo;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _renderEngine = new RenderEngine();
+            Loaded += MainWindow_Loaded;
         }
 
-
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            _renderEngine = new RenderEngine(RenderHost);
             _renderEngine.StartEngine();
-            //_engineStartTaskTokenSrc = new CancellationTokenSource();
-
-            //_engineStartTask = new Task(() =>
-            //{
-            //}, _engineStartTaskTokenSrc.Token);
         }
 
+        public IntPtr Handle { get; private set; }
 
-        private void StopButton_Click(object sender, RoutedEventArgs e)
+        public static int ViewPortWidth { get; set; }
+
+        public static int ViewPortHeight { get; set; }
+
+        public void Dispose()
         {
             throw new NotImplementedException();
         }
-
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             _renderEngine.Play();
         }
 
-
         private void PauseButton_Click(object sender, RoutedEventArgs e)
         {
             _renderEngine.Pause();
-        }
-
-        private void RestartButton_Click(object sender, RoutedEventArgs e)
-        {
-            _renderEngine.Restart();
         }
     }
 }

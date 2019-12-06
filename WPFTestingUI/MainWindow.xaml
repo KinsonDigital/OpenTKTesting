@@ -5,14 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFTestingUI"
         mc:Ignorable="d" Title="MainWindow" Width="300" Height="300">
-    
-    <Grid>
-        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-            <Button x:Name="StartButton" Content="Start Engine" Width="100" Height="25" Margin="5" Click="StartButton_Click"/>
-            <Button x:Name="StopButton" Content="Stop Engine" Width="100" Height="25" Margin="5" Click="StopButton_Click"/>
-            <Button x:Name="RestartButton" Content="Restart" Width="100" Height="25" Margin="5" Click="RestartButton_Click"/>
-            <Button x:Name="PlayButton" Content="Play Engine" Width="100" Height="25" Margin="5" Click="PlayButton_Click"/>
-            <Button x:Name="PauseButton" Content="Pause Engine" Width="100" Height="25" Margin="5" Click="PauseButton_Click"/>
-        </StackPanel>
-    </Grid>
+
+    <Border BorderThickness="2" BorderBrush="Orange">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            
+            <WindowsFormsHost x:Name="RenderHost" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0"/>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Height="50" HorizontalAlignment="Center">
+                <Button x:Name="PlayButton" Content="Play" Width="100" Height="25" Click="PlayButton_Click" Margin="0, 0, 2.5, 0"/>
+                <Button x:Name="PauseButton" Content="Pause" Width="100" Height="25"  Click="PauseButton_Click" Margin="2.5, 0, 0, 0"/>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>
