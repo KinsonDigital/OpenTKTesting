@@ -29,6 +29,8 @@ namespace WPFTestingUI
     {
         private RenderEngine _renderEngine;
         private IWindowInfo _windowInfo;
+        private IGLInvoker _glInvoker;
+        private Renderer _renderer;
 
         public MainWindow()
         {
@@ -39,7 +41,9 @@ namespace WPFTestingUI
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _renderEngine = new RenderEngine(RenderHost);
+            _glInvoker = new GLInvoker();
+            _renderer = new Renderer(RenderHost, _glInvoker);
+            _renderEngine = new RenderEngine(_renderer);
             _renderEngine.StartEngine();
         }
 
@@ -62,6 +66,11 @@ namespace WPFTestingUI
         private void PauseButton_Click(object sender, RoutedEventArgs e)
         {
             _renderEngine.Pause();
+        }
+
+        private void ReloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            _renderEngine.Reload();
         }
     }
 }

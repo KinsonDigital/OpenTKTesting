@@ -13,7 +13,7 @@ namespace WPFTestingUI.OpenGL
         private IGLInvoker _gl;
         public readonly int ProgramHandle;
 
-        private static readonly Dictionary<string, int> _uniformLocations = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _uniformLocations = new Dictionary<string, int>();
 
 
         #region Constructors
