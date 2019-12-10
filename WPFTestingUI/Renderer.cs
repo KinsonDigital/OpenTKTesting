@@ -15,7 +15,6 @@ namespace WPFTestingUI
         private readonly GLControl _glControl;
         private readonly IGLInvoker _gl;
         private bool _increaseSize;
-        private float _size = 1;
         private bool _increaseAngle;
         private float _angle;
         private Texture _currentTexture;
@@ -108,40 +107,15 @@ namespace WPFTestingUI
         }
 
 
-        private void Update(Texture texture)
-        {
-            if (texture is null)
-                return;
-
-            //AdjustSize();
-            //AdjustAngle();
-
-            //var matrix = BuildTransformationMatrix(texture.Width, texture.Height, texture.X, texture.Y, _size, _angle);
-
-
-            //Update the transformation matrix on the GPU
-            //_gl.SetMat4Uniform(texture.Shaders[0].ProgramHandle, "transform", matrix);
-        }
-
-
-        private void Update(Texture[] textures)
-        {
-            if (textures is null)
-                return;
-
-            textures.ToList().ForEach(t => Update(t));
-        }
-
-
         private void Draw(Texture texture)
         {
             if (texture is null)
                 return;
 
-            AdjustSize();
+            texture.AdjustSize();
             AdjustAngle();
 
-            var matrix = BuildTransformationMatrix(texture.X, texture.Y, texture.Width, texture.Height, _size, _angle);
+            var matrix = BuildTransformationMatrix(texture.X, texture.Y, texture.Width, texture.Height, texture.Size, _angle);
 
             UpdateTintColor(texture);
 
@@ -179,21 +153,6 @@ namespace WPFTestingUI
             }
 
             _angle += _increaseAngle ? 1f : -1f;
-        }
-
-
-        private void AdjustSize()
-        {
-            if (_size >= 2f)
-            {
-                _increaseSize = false;
-            }
-            else if (_size <= 0.5f)
-            {
-                _increaseSize = true;
-            }
-
-            _size += _increaseSize ? 0.01f : -0.01f;
         }
 
 

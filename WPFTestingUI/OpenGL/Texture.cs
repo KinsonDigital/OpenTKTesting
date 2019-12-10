@@ -14,6 +14,7 @@ namespace WPFTestingUI.OpenGL
         private float _x;
         private float _y;
         private NETColor _tintColor = NETColor.FromArgb(0, 255, 255, 255);
+        private bool _increaseSize;
 
 
         #region Props
@@ -118,6 +119,21 @@ namespace WPFTestingUI.OpenGL
         public void Update()
         {
             UpdateTransformData(BuildTransformationMatrix());
+        }
+
+
+        public void AdjustSize()
+        {
+            if (Size >= 2f)
+            {
+                _increaseSize = false;
+            }
+            else if (Size <= 0.5f)
+            {
+                _increaseSize = true;
+            }
+
+            Size += _increaseSize ? 0.01f : -0.01f;
         }
         #endregion
 

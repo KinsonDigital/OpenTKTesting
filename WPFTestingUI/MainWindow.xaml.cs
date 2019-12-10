@@ -48,10 +48,12 @@ namespace WPFTestingUI
             var link = new Texture("Link.png");
             link.X = 50;
             link.Y = 50;
+            link.Size = 2f;
 
             var sword = new Texture("Sword.png");
             sword.X = 250;
             sword.Y = 50;
+            sword.Size = 0.5f;
 
 
             _renderEngine.AddTexture(link);
