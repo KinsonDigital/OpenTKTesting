@@ -23,6 +23,10 @@ namespace WPFTestingUI.OpenGL
         // A commented example of GLSL can be found in shader.vert
         public Shader(IGLInvoker gl, string vertPath, string fragPath)
         {
+            //TODO: Add a caching system to keep track of bound shaders.  This will improve performance
+            //because then we can check to see if the shader is already bound.  On dispose, the static cache of
+            //bound shaders would also need to be updated by removing the shader handle id from the cahce list
+
             _gl = gl;
 
             // There are several different types of shaders, but the only two you need for basic rendering are the vertex and fragment shaders.

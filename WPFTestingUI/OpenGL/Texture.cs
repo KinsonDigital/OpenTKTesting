@@ -55,6 +55,10 @@ namespace WPFTestingUI.OpenGL
         internal float[] Vertices { get; set; }
 
         internal uint[] Indices { get; set; }
+
+        public int X { get; set; }
+
+        public int Y { get; set; }
         #endregion
 
 
@@ -105,6 +109,11 @@ namespace WPFTestingUI.OpenGL
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
 
+
+        public void UnUse()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
 
         public void Update()
         {

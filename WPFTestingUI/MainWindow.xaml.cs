@@ -30,7 +30,7 @@ namespace WPFTestingUI
         private RenderEngine _renderEngine;
         private IWindowInfo _windowInfo;
         private IGLInvoker _glInvoker;
-        private Renderer _renderer;
+        private IRenderer _renderer;
 
         public MainWindow()
         {
@@ -44,6 +44,19 @@ namespace WPFTestingUI
             _glInvoker = new GLInvoker();
             _renderer = new Renderer(RenderHost, _glInvoker);
             _renderEngine = new RenderEngine(_renderer);
+
+            var link = new Texture("Link.png");
+            link.X = 50;
+            link.Y = 50;
+
+            var sword = new Texture("Sword.png");
+            sword.X = 250;
+            sword.Y = 50;
+
+
+            _renderEngine.AddTexture(link);
+            _renderEngine.AddTexture(sword);
+
             _renderEngine.StartEngine();
         }
 

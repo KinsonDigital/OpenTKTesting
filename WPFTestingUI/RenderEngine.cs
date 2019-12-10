@@ -17,20 +17,20 @@ namespace WPFTestingUI
     {
         private Task _glWinTask;
         private CancellationTokenSource _glWinTaskTokenSrc;
-        private Texture _texture;
+        private List<Texture> _textures = new List<Texture>();
         private IRenderer _renderer;
 
-        public RenderEngine(Renderer renderer)
+
+        public RenderEngine(IRenderer renderer)
         {
             _renderer = renderer;
-
-            _texture = new Texture("Link.png");
         }
 
 
         public bool IsRunning { get; set; }
 
 
+        #region Public Methods
         public void StartEngine()
         {
             SetupTask();
@@ -59,6 +59,14 @@ namespace WPFTestingUI
         }
 
 
+        public void AddTexture(Texture texture)
+        {
+            _textures.Add(texture);
+        }
+        #endregion
+
+
+        #region Private Methods
         private void SetupTask()
         {
             _glWinTaskTokenSrc = new CancellationTokenSource();
@@ -75,8 +83,10 @@ namespace WPFTestingUI
             {
                 _glWinTask.Wait(60);
 
-                _renderer.Render(_texture);
+                _renderer.Render(_textures.ToArray());
+                //_textures.ForEach(t => _renderer.Render(t));
             }
         }
+        #endregion
     }
 }

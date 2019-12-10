@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
@@ -18,6 +19,7 @@ namespace WPFTestingUI
         private bool _increaseAngle;
         private float _angle;
         private Texture _currentTexture;
+        private Texture[] _textures;
 
 
         public IntPtr WindowHandle { get; set; }
@@ -40,19 +42,23 @@ namespace WPFTestingUI
         }
 
 
-        private void _glControl_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        private void _glControl_Paint(object sender, PaintEventArgs e)
         {
             GL.Viewport(_glControl.Size);
 
-            Update(_currentTexture);
+            RenderBegin();
 
-            Draw(_currentTexture);
+            Draw(_textures);
+
+            RenderEnd();
         }
 
 
         public void Clear(byte red, byte green, byte blue, byte alpha)
         {
-            throw new NotImplementedException();
+            _gl.ClearColor(red, green, blue, alpha);
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 
 
@@ -76,16 +82,25 @@ namespace WPFTestingUI
         }
 
 
+        public void Render(Texture[] textures)
+        {
+            _textures = textures;
+
+            _glControl.Invalidate();
+        }
+
+
         public void RenderBegin()
         {
-            throw new NotImplementedException();
+            Clear(100, 149, 237, 255);
         }
 
 
         public void RenderEnd()
         {
-            throw new NotImplementedException();
+            _glControl.SwapBuffers();
         }
+
 
         public void Dispose()
         {
@@ -93,8 +108,32 @@ namespace WPFTestingUI
         }
 
 
-
         private void Update(Texture texture)
+        {
+            if (texture is null)
+                return;
+
+            //AdjustSize();
+            //AdjustAngle();
+
+            //var matrix = BuildTransformationMatrix(texture.Width, texture.Height, texture.X, texture.Y, _size, _angle);
+
+
+            //Update the transformation matrix on the GPU
+            //_gl.SetMat4Uniform(texture.Shaders[0].ProgramHandle, "transform", matrix);
+        }
+
+
+        private void Update(Texture[] textures)
+        {
+            if (textures is null)
+                return;
+
+            textures.ToList().ForEach(t => Update(t));
+        }
+
+
+        private void Draw(Texture texture)
         {
             if (texture is null)
                 return;
@@ -102,35 +141,29 @@ namespace WPFTestingUI
             AdjustSize();
             AdjustAngle();
 
-            var matrix = BuildTransformationMatrix(100, 100, 50, 64, _size, _angle);
+            var matrix = BuildTransformationMatrix(texture.X, texture.Y, texture.Width, texture.Height, _size, _angle);
 
-            var tintColor = new Vector4(0, 0, 0, 0);
-
-            tintColor = tintColor.MapValues(0, 255, 0, 1);
-
-            tintColor.W = 0.5f;
-
-            //Update the tint color on the GPU
-            _gl.SetVec4Uniform(texture.Shaders[0].ProgramHandle, "u_tintClr", tintColor);
+            UpdateTintColor(texture);
 
             //Update the transformation matrix on the GPU
             _gl.SetMat4Uniform(texture.Shaders[0].ProgramHandle, "transform", matrix);
-        }
-
-
-        private void Draw(Texture texture)
-        {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            if (texture is null)
-                return;
 
             GL.BindVertexArray(texture.VA.VertexArrayHandle);
             texture.Use();
             texture.Shaders[0].Use();
+            texture.VA.Bind();
             GL.DrawElements(PrimitiveType.Triangles, texture.Indices.Length, DrawElementsType.UnsignedInt, 0);
 
-            _glControl.SwapBuffers();
+            texture.UnUse();
+        }
+
+
+        private void Draw(Texture[] textures)
+        {
+            if (textures is null)
+                return;
+
+            textures.ToList().ForEach(t => Draw(t));
         }
 
 
@@ -161,6 +194,19 @@ namespace WPFTestingUI
             }
 
             _size += _increaseSize ? 0.01f : -0.01f;
+        }
+
+
+        private void UpdateTintColor(Texture texture)
+        {
+            var tintColor = new Vector4(0, 0, 0, 0);
+
+            tintColor = tintColor.MapValues(0, 255, 0, 1);
+
+            tintColor.W = 0.5f;
+
+            //Update the tint color on the GPU
+            _gl.SetVec4Uniform(texture.Shaders[0].ProgramHandle, "u_tintClr", tintColor);
         }
 
 

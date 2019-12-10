@@ -55,6 +55,9 @@ namespace WPFTestingUI
         void Render(Texture texture);
 
 
+        void Render(Texture[] textures);
+
+
         /// <summary>
         /// Ends the rendering process.  All of the graphics batched in the <see cref="Render(Particle{ParticleTexture})"/>
         /// calls will be rendered to the render target when this method is invoked.

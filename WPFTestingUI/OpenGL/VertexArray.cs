@@ -20,6 +20,11 @@ namespace WPFTestingUI.OpenGL
         }
 
 
+        public void Bind()
+        {
+            GL.BindVertexArray(VertexArrayHandle);
+        }
+
         public int VertexArrayHandle => _vertexArrayHandle;
 
 
