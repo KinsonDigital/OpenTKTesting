@@ -1,18 +1,12 @@
-﻿using OpenTK;
-using OpenTK.Graphics.ES20;
-using System;
-
-namespace OpenTKTesting
+﻿namespace OpenTKTesting
 {
     class Program
     {
-        private static Game _game;
-
         static void Main(string[] args)
         {
-            _game = new Game(640, 480);
+            using var window = new Window(500, 500, "LearnOpenTK - Textures");
 
-            _game.Run();
+            window.Run(60.0);
         }
     }
 }
