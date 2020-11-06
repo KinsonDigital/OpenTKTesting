@@ -3,9 +3,7 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using OpenTK.Graphics.OpenGL4;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace WPFTestingUI.OpenGL

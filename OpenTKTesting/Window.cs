@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Input;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 
 namespace OpenTKTesting
 {
@@ -11,8 +10,6 @@ namespace OpenTKTesting
     {
         #region Private Fields
         private Texture _texture;
-        private KeyboardState _currentKeyState;
-        private KeyboardState _prevKeyState;
         private float _elapsedMS;
         private readonly Renderer _renderer;
         private static bool _beginInvoked;
@@ -29,17 +26,19 @@ namespace OpenTKTesting
 
 
         #region Constructors
-        public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title)
+        public Window(GameWindowSettings gameWinSettings, NativeWindowSettings nativeWinSettings)
+            : base(gameWinSettings, nativeWinSettings)
         {
-            ViewPortWidth = width;
-            ViewPortHeight = height;
+            ViewPortWidth = nativeWinSettings.Size.X;
+            ViewPortHeight = nativeWinSettings.Size.Y;
+
             _renderer = new Renderer();
         }
         #endregion
 
 
         #region Protected Methods
-        protected override void OnLoad(EventArgs e)
+        protected override void OnLoad()
         {
             GLExt.EnableAlpha();
 
@@ -49,20 +48,18 @@ namespace OpenTKTesting
             _texture.X = 300;
             _texture.Y = 300;
 
-            base.OnLoad(e);
+            base.OnLoad();
         }
 
 
-        protected override void OnUpdateFrame(FrameEventArgs e)
+        protected override void OnUpdateFrame(FrameEventArgs args)
         {
-            _currentKeyState = Keyboard.GetState();
-
-            _elapsedMS += (float)e.Time * 1000f;
+            _elapsedMS += (float)args.Time * 1000f;
 
             if (_elapsedMS >= 16f && false)
             {
-                _texture.X += 25f * (float)e.Time;
-                _texture.Y += 25f * (float)e.Time;
+                _texture.X += 25f * (float)args.Time;
+                _texture.Y += 25f * (float)args.Time;
                 _texture.Angle += 1;
 
                 _texture.Size += _increaseSize ? 0.015f : -0.015f;
@@ -81,12 +78,7 @@ namespace OpenTKTesting
                 RandomColor();
             }
 
-            if (_currentKeyState.IsKeyDown(Key.Escape))
-                Exit();
-
-            _prevKeyState = _currentKeyState;
-
-            base.OnUpdateFrame(e);
+            base.OnUpdateFrame(args);
         }
 
         private void RandomColor()
@@ -115,27 +107,25 @@ namespace OpenTKTesting
             base.OnRenderFrame(e);
         }
 
-
-        protected override void OnResize(EventArgs e)
+        protected override void OnResize(ResizeEventArgs e)
         {
-            GL.Viewport(0, 0, Width, Height);
-
-            ViewPortWidth = Width;
-            ViewPortHeight = Height;
+            GL.Viewport(0, 0, this.Size.X, this.Size.Y);
+            
+            ViewPortWidth = this.Size.X;
+            ViewPortHeight = this.Size.Y;
 
             _texture.Update();
 
             base.OnResize(e);
         }
 
-
-        protected override void OnUnload(EventArgs e)
+        protected override void OnUnload()
         {
             _texture.Dispose();
 
             GL.UseProgram(0);
 
-            base.OnUnload(e);
+            base.OnUnload();
         }
         #endregion
 

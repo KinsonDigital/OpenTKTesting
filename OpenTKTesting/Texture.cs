@@ -1,14 +1,7 @@
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using NETColor = System.Drawing.Color;
 
 namespace OpenTKTesting
