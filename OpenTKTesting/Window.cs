@@ -46,7 +46,9 @@ namespace OpenTKTesting
             GLExt.ClearColor(100, 148, 237, 255);
 
             _texture = new Texture("Gear.png");
-            
+            _texture.X = 300;
+            _texture.Y = 300;
+
             base.OnLoad(e);
         }
 
@@ -57,7 +59,7 @@ namespace OpenTKTesting
 
             _elapsedMS += (float)e.Time * 1000f;
 
-            if (_elapsedMS >= 16f)
+            if (_elapsedMS >= 16f && false)
             {
                 _texture.X += 25f * (float)e.Time;
                 _texture.Y += 25f * (float)e.Time;

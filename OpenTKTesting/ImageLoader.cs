@@ -25,8 +25,13 @@ namespace OpenTKTesting
             var image = (Image<Rgba32>)Image.Load(fullPath);
 
             image.Mutate(x => x.Flip(FlipMode.Vertical));
-            
-            Rgba32[] tempPixels = image.GetPixelSpan().ToArray();
+
+            var tempPixels = new List<Rgba32>();
+
+            for (var i = 0; i < image.Height; i++)
+            {
+                tempPixels.AddRange(image.GetPixelRowSpan(i).ToArray());
+            }
 
             var pixels = new List<byte>();
 
@@ -37,6 +42,9 @@ namespace OpenTKTesting
                 pixels.Add(pixel.B);
                 pixels.Add(pixel.A);
             }
+
+            var width = image.Width;
+            var height = image.Height;
 
             image.Dispose();
 
